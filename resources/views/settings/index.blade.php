@@ -1,0 +1,6 @@
+@extends('layouts.app')
+@section('title', 'Pengaturan')
+@section('content')
+<div class="container-fluid"><x-page-header title="Pengaturan" subtitle="Atur preferensi tampilan portfolio kamu." />
+<div class="row g-4"><div class="col-lg-8"><div class="glass-card"><h5 class="fw-bold mb-4">Preferensi Tampilan</h5><div class="d-flex justify-content-between align-items-center py-3 border-bottom"><div><strong>Mode gelap</strong><small class="d-block text-muted">Gunakan tampilan yang nyaman di mata.</small></div><div class="form-check form-switch"><input class="form-check-input" type="checkbox" role="switch" id="themeSwitch"></div></div><div class="d-flex justify-content-between align-items-center py-3"><div><strong>Portfolio publik</strong><small class="d-block text-muted">Izinkan portfolio dibagikan melalui QR Code.</small></div><div class="form-check form-switch"><input class="form-check-input" type="checkbox" role="switch" checked></div></div></div></div><div class="col-lg-4"><div class="glass-card"><h5 class="fw-bold">Akun</h5><p class="text-muted small">Kelola informasi profil dan keamanan akun.</p><a href="{{ route('profile') }}" class="btn btn-outline-primary w-100">Edit Profil</a></div></div></div></div>
+@endsection
