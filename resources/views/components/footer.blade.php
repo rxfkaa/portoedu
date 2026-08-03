@@ -1,19 +1,29 @@
-<footer class="footer">
+<footer class="footer mt-5">
 
-    <div class="footer-left">
+    <div class="d-flex justify-content-between align-items-center flex-wrap">
 
-        © {{ date('Y') }}
+        <div>
 
-        <strong>Digital Student Portfolio</strong>
+            <strong>PortoEdu</strong>
 
-        | Developed by Rafka Aleandra
+            <div class="text-muted small">
+
+                Digital Student Portfolio © {{ date('Y') }}
+
+            </div>
+
+        </div>
+
+        <div class="footer-links">
+
+            <a href="#">Privacy</a>
+
+            <a href="#">Terms</a>
+
+            <a href="#">Support</a>
+
+        </div>
 
     </div>
 
-    <div class="footer-right">
-
-        Version 1.0.0
-
-    </div>
-
-</footer>   
+</footer>

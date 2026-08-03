@@ -1,17 +1,33 @@
-<div class="page-header">
+<div class="page-header mb-4">
 
     <div>
 
-        <h2>{{ $title }}</h2>
+        <h2 class="page-title">
 
-        <p>{{ $subtitle }}</p>
+            {{ $title }}
+
+        </h2>
+
+        @isset($subtitle)
+
+        <p class="page-subtitle">
+
+            {{ $subtitle }}
+
+        </p>
+
+        @endisset
 
     </div>
+
+    @isset($action)
 
     <div>
 
-        {{ $slot }}
+        {!! $action !!}
 
     </div>
+
+    @endisset
 
 </div>

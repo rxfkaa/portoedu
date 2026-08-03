@@ -7,95 +7,519 @@
 <div class="container-fluid">
 
     {{-- HERO --}}
-    @include('dashboard.components.hero')
 
-    {{-- STATISTIK --}}
-    <div class="row g-4 mt-1">
+    <div class="dashboard-hero mb-4">
 
-        @include('components.stat-card',[
-            'title'=>'Prestasi',
-            'value'=>12,
-            'icon'=>'bi bi-trophy-fill',
-            'growth'=>'+15% bulan ini',
-            'color'=>'bg-blue'
-        ])
+        <div class="row align-items-center">
 
-        @include('components.stat-card',[
-            'title'=>'Sertifikat',
-            'value'=>8,
-            'icon'=>'bi bi-patch-check-fill',
-            'growth'=>'+10% bulan ini',
-            'color'=>'bg-green'
-        ])
+            <div class="col-lg-8">
 
-        @include('components.stat-card',[
-            'title'=>'Project',
-            'value'=>5,
-            'icon'=>'bi bi-kanban-fill',
-            'growth'=>'+8% bulan ini',
-            'color'=>'bg-orange'
-        ])
+                <span class="dashboard-badge">
 
-        @include('components.stat-card',[
-            'title'=>'Organisasi',
-            'value'=>3,
-            'icon'=>'bi bi-people-fill',
-            'growth'=>'+2% bulan ini',
-            'color'=>'bg-red'
-        ])
+                    {{ $greeting }}
 
-    </div>
+                </span>
 
-    {{-- BARIS 2 --}}
-    <div class="row mt-4">
+                <h2 class="mt-4 fw-bold">
 
-        <div class="col-lg-8">
+                    Halo,
+                    {{ Auth::user()->name }}
 
-            @include('dashboard.components.chart')
+                </h2>
 
-        </div>
+                <p class="mt-3 text-light">
 
-        <div class="col-lg-4">
+                    Selamat datang kembali di PortoEdu.
+                    Semua pencapaian akademikmu dapat
+                    dikelola dalam satu dashboard modern.
 
-            @include('dashboard.components.progress')
+                </p>
+
+            </div>
+
+            <div class="col-lg-4 text-center">
+
+                <img
+                    src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
+                    class="hero-avatar img-fluid">
+
+            </div>
 
         </div>
 
     </div>
 
-    {{-- BARIS 3 --}}
-    <div class="row mt-4">
+    {{-- STATISTIC --}}
 
-        <div class="col-lg-8">
+    <div class="row g-4">
 
-            @include('dashboard.components.activity')
+        <div class="col-lg-3">
+
+            <div class="stats-card">
+
+                <small>Total Prestasi</small>
+
+                <h2>
+
+                    {{ $achievementCount }}
+
+                </h2>
+
+                <i class="bi bi-trophy-fill text-warning"></i>
+
+            </div>
 
         </div>
 
-        <div class="col-lg-4">
+        <div class="col-lg-3">
 
-            @include('dashboard.components.top-achievement')
+            <div class="stats-card">
+
+                <small>Total Project</small>
+
+                <h2>
+
+                    {{ $projectCount }}
+
+                </h2>
+
+                <i class="bi bi-code-slash text-primary"></i>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-3">
+
+            <div class="stats-card">
+
+                <small>Sertifikat</small>
+
+                <h2>
+
+                    {{ $certificateCount }}
+
+                </h2>
+
+                <i class="bi bi-award-fill text-success"></i>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-3">
+
+            <div class="stats-card">
+
+                <small>Organisasi</small>
+
+                <h2>
+
+                    {{ $organizationCount }}
+
+                </h2>
+
+                <i class="bi bi-people-fill text-danger"></i>
+
+            </div>
 
         </div>
 
     </div>
 
-    {{-- BARIS 4 --}}
-    <div class="row mt-4">
+    {{-- QUICK MENU --}}
 
-        <div class="col-lg-6">
+    <div class="row mt-4 g-4">
 
-            @include('dashboard.components.quick-action')
+            <div class="col-lg-3">
+
+            <a
+                href="{{ route('achievements.index') }}"
+                class="quick-card">
+
+                <i class="bi bi-trophy-fill"></i>
+
+                <h5>
+
+                    Prestasi
+
+                </h5>
+
+                <p>
+
+                    Kelola seluruh prestasi.
+
+                </p>
+
+            </a>
 
         </div>
 
-        <div class="col-lg-6">
+        <div class="col-lg-3">
 
-            @include('dashboard.components.calendar')
+            <a
+                href="{{ route('projects.index') }}"
+                class="quick-card">
+
+                <i class="bi bi-code-slash"></i>
+
+                <h5>
+
+                    Project
+
+                </h5>
+
+                <p>
+
+                    Kelola semua project.
+
+                </p>
+
+            </a>
+
+        </div>
+
+        <div class="col-lg-3">
+
+            <a
+                href="{{ route('certificates.index') }}"
+                class="quick-card">
+
+                <i class="bi bi-award-fill"></i>
+
+                <h5>
+
+                    Certificate
+
+                </h5>
+
+                <p>
+
+                    Kelola sertifikat.
+
+                </p>
+
+            </a>
+
+        </div>
+
+        <div class="col-lg-3">
+
+            <a
+                href="{{ route('profile') }}"
+                class="quick-card">
+
+                <i class="bi bi-person-fill"></i>
+
+                <h5>
+
+                    Profile
+
+                </h5>
+
+                <p>
+
+                    Edit profil.
+
+                </p>
+
+            </a>
 
         </div>
 
     </div>
+
+    {{-- CHART & PROGRESS --}}
+
+<div class="row mt-4 g-4">
+
+    <div class="col-lg-8">
+
+        <div class="chart-card">
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+
+                <h5 class="fw-bold">
+
+                    Statistik Prestasi
+
+                </h5>
+
+                <span class="badge bg-primary">
+
+                    {{ date('Y') }}
+
+                </span>
+
+            </div>
+
+            <canvas id="achievementChart"></canvas>
+
+        </div>
+
+    </div>
+
+    <div class="col-lg-4">
+
+        <div class="chart-card">
+
+            <h5 class="fw-bold mb-4">
+
+                Progress Portfolio
+
+            </h5>
+
+            <h2 class="fw-bold text-primary">
+
+                {{ number_format($progress) }}%
+
+            </h2>
+
+            <p class="text-muted">
+
+                Tingkat kelengkapan portfolio kamu.
+
+            </p>
+
+            <div class="progress mt-4 mb-4" style="height:12px;">
+
+                <div
+                    class="progress-bar bg-success"
+                    style="width: {{ $progress }}%">
+
+                </div>
+
+            </div>
+
+            <hr>
+
+            <div class="d-flex justify-content-between mt-3">
+
+                <span>
+
+                    Prestasi
+
+                </span>
+
+                <strong>
+
+                    {{ $achievementCount }}
+
+                </strong>
+
+            </div>
+
+            <div class="d-flex justify-content-between mt-2">
+
+                <span>
+
+                    Project
+
+                </span>
+
+                <strong>
+
+                    {{ $projectCount }}
+
+                </strong>
+
+            </div>
+
+            <div class="d-flex justify-content-between mt-2">
+
+                <span>
+
+                    Sertifikat
+
+                </span>
+
+                <strong>
+
+                    {{ $certificateCount }}
+
+                </strong>
+
+            </div>
+
+            <div class="d-flex justify-content-between mt-2">
+
+                <span>
+
+                    Organisasi
+
+                </span>
+
+                <strong>
+
+                    {{ $organizationCount }}
+
+                </strong>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{{-- RECENT ACTIVITY --}}
+
+<div class="row mt-4">
+
+    <div class="col-lg-12">
+
+        <div class="activity-card">
+
+            <div class="d-flex justify-content-between align-items-center mb-4">
+
+                <h5 class="fw-bold">
+
+                    Aktivitas Terbaru
+
+                </h5>
+
+                <span class="badge bg-success">
+
+                    Live
+
+                </span>
+
+            </div>
+
+            @forelse($recentAchievements as $achievement)
+
+            <div class="activity-item">
+
+                <div class="activity-icon bg-warning">
+
+                    <i class="bi bi-trophy-fill"></i>
+
+                </div>
+
+                <div class="activity-info">
+
+                    <h6>
+
+                        {{ $achievement->title }}
+
+                    </h6>
+
+                    <small>
+
+                        {{ $achievement->created_at->diffForHumans() }}
+
+                    </small>
+
+                </div>
+
+            </div>
+
+            @empty
+
+            <div class="text-center py-5">
+
+                <i class="bi bi-inbox display-5 text-muted"></i>
+
+                <p class="mt-3 text-muted">
+
+                    Belum ada aktivitas.
+
+                </p>
+
+            </div>
+
+            @endforelse
+
+        </div>
+
+    </div>
+
+</div>
+
+{{-- TARGET --}}
+
+<div class="row mt-4 g-4">
+
+    <div class="col-lg-6">
+
+        <div class="chart-card">
+
+            <h5 class="fw-bold mb-4">
+
+                Target Tahun Ini
+
+            </h5>
+
+            <ul class="list-group list-group-flush">
+
+                <li class="list-group-item d-flex justify-content-between">
+
+                    Upload 10 Project
+
+                    <span class="badge bg-primary">
+
+                        {{ $projectCount }}/10
+
+                    </span>
+
+                </li>
+
+                <li class="list-group-item d-flex justify-content-between">
+
+                    Upload 20 Sertifikat
+
+                    <span class="badge bg-success">
+
+                        {{ $certificateCount }}/20
+
+                    </span>
+
+                </li>
+
+                <li class="list-group-item d-flex justify-content-between">
+
+                    Prestasi Baru
+
+                    <span class="badge bg-warning">
+
+                        {{ $achievementCount }}/15
+
+                    </span>
+
+                </li>
+
+            </ul>
+
+        </div>
+
+    </div>
+
+    <div class="col-lg-6">
+
+        <div class="chart-card text-center">
+
+            <i class="bi bi-stars display-1 text-warning"></i>
+
+            <h3 class="mt-4">
+
+                Keep Going 🚀
+
+            </h3>
+
+            <p class="text-muted">
+
+                Terus tambahkan prestasi, project,
+                sertifikat, dan organisasi agar
+                portfolio kamu semakin lengkap.
+
+            </p>
+
+        </div>
+
+    </div>
+
+</div>
 
 </div>
 

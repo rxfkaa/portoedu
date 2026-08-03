@@ -1,10 +1,182 @@
 @extends('layouts.app')
-@section('title', 'Project')
+
+@section('title','Projects')
+
 @section('content')
-<div class="container-fluid"><x-page-header title="Project Saya" subtitle="Kumpulan karya terbaik yang pernah dibuat."><a href="#" class="btn btn-primary rounded-4"><i class="bi bi-plus-circle me-1"></i>Tambah Project</a></x-page-header>
-<div class="row g-4">
-@foreach ([['Sistem Kasir UMKM','Laravel · MySQL','bi-cart-check-fill','bg-primary'],['UI Aplikasi Edukasi','Figma · UI/UX','bi-palette-fill','bg-warning'],['Website Portfolio','HTML · CSS · JavaScript','bi-window-stack','bg-success']] as [$title,$tech,$icon,$color])
-<div class="col-md-6 col-xl-4"><article class="certificate-card"><div class="p-4 text-white {{ $color }}"><i class="bi {{ $icon }} display-5"></i><span class="float-end badge text-bg-light">2026</span></div><div class="certificate-body"><h5>{{ $title }}</h5><p>{{ $tech }}</p><div class="d-flex gap-2"><a href="#" class="btn btn-sm btn-outline-primary">Preview</a><a href="#" class="btn btn-sm btn-light">Detail</a></div></div></article></div>
-@endforeach
-</div></div>
+
+<div class="container-fluid">
+
+    <div class="page-header d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+
+            <h2 class="fw-bold">
+
+                💻 My Projects
+
+            </h2>
+
+            <p class="text-muted">
+
+                Kelola semua project yang pernah kamu buat.
+
+            </p>
+
+        </div>
+
+        <a
+            href="{{ route('projects.create') }}"
+            class="btn btn-primary rounded-4">
+
+            <i class="bi bi-plus-circle me-2"></i>
+
+            Tambah Project
+
+        </a>
+
+    </div>
+
+    @if(session('success'))
+
+        <div class="alert alert-success rounded-4">
+
+            {{ session('success') }}
+
+        </div>
+
+    @endif
+
+    <div class="glass-card p-4">
+
+        <div class="row">
+
+            @forelse($projects as $project)
+
+                <div class="col-lg-4 col-md-6 mb-4">
+
+                    <div class="project-card h-100">
+
+                        @if($project->image)
+
+                            <img
+                                src="{{ asset('storage/'.$project->image) }}"
+                                class="project-image">
+
+                        @else
+
+                            <img
+                                src="https://placehold.co/600x350?text=Project"
+                                class="project-image">
+
+                        @endif
+
+                        <div class="p-3">
+
+                            <h5 class="fw-bold">
+
+                                {{ $project->title }}
+
+                            </h5>
+
+                            <span class="badge bg-primary">
+
+                                {{ $project->category }}
+
+                            </span>
+
+                            <p class="text-muted mt-3">
+
+                                {{ Str::limit($project->description,80) }}
+
+                            </p>
+
+                            <small>
+
+                                {{ $project->technology }}
+
+                            </small>
+
+                            <hr>
+
+                            <div class="d-flex gap-2">
+
+                                <a
+                                    href="{{ route('projects.show',$project) }}"
+                                    class="btn btn-outline-primary btn-sm">
+
+                                    Detail
+
+                                </a>
+
+                                <a
+                                    href="{{ route('projects.edit',$project) }}"
+                                    class="btn btn-warning btn-sm">
+
+                                    Edit
+
+                                </a>
+
+                                <form
+                                    action="{{ route('projects.destroy',$project) }}"
+                                    method="POST">
+
+                                    @csrf
+                                    @method('DELETE')
+
+                                    <button
+                                        class="btn btn-danger btn-sm"
+                                        onclick="return confirm('Hapus project?')">
+
+                                        Hapus
+
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            @empty
+
+                <div class="col-12">
+
+                    <div class="text-center py-5">
+
+                        <i class="bi bi-folder display-1 text-secondary"></i>
+
+                        <h4 class="mt-3">
+
+                            Belum ada project
+
+                        </h4>
+
+                        <p class="text-muted">
+
+                            Silakan tambahkan project pertamamu.
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+            @endforelse
+
+        </div>
+
+        <div class="mt-4">
+
+            {{ $projects->links() }}
+
+        </div>
+
+    </div>
+
+</div>
+
 @endsection

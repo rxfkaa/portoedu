@@ -1,28 +1,16 @@
-<div class="col-xl-3 col-md-6 mb-4">
+<div class="stat-card">
 
-    <div class="stat-card">
+    <div class="stat-icon {{ $color ?? 'bg-primary' }}">
 
-        <div class="stat-icon {{ $color }}">
+        <i class="{{ $icon }}"></i>
 
-            <i class="{{ $icon }}"></i>
+    </div>
 
-        </div>
+    <div>
 
-        <div class="stat-content">
+        <small>{{ $title }}</small>
 
-            <span>{{ $title }}</span>
-
-            <h3>{{ $value }}</h3>
-
-            <small>
-
-                <i class="bi bi-arrow-up text-success"></i>
-
-                {{ $growth }}
-
-            </small>
-
-        </div>
+        <h3>{{ $value }}</h3>
 
     </div>
 

@@ -1,20 +1,23 @@
 <div class="empty-state">
 
-    <img
-        src="https://cdn-icons-png.flaticon.com/512/7486/7486807.png"
-        width="180"
-    >
+    <i class="bi bi-folder2-open display-1 text-primary"></i>
 
-    <h3>
+    <h4 class="mt-3">
 
-        Belum Ada Data
+        {{ $title }}
 
-    </h3>
+    </h4>
 
-    <p>
+    <p class="text-muted">
 
-        Data akan muncul setelah kamu menambahkannya.
+        {{ $description }}
 
     </p>
+
+    @isset($button)
+
+        {!! $button !!}
+
+    @endisset
 
 </div>

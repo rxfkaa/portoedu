@@ -1,98 +1,165 @@
 @extends('layouts.app')
 
-@section('title','Sertifikat')
+@section('title','Certificates')
 
 @section('content')
 
 <div class="container-fluid">
 
-<div class="page-header">
+    <div class="page-header d-flex justify-content-between align-items-center">
 
-<div>
+        <div>
 
-<h2 class="fw-bold">
+            <h2 class="fw-bold">
 
-📜 Sertifikat Saya
+                🏅 Sertifikat Saya
 
-</h2>
+            </h2>
 
-<p class="text-muted">
+            <p class="text-muted">
 
-Kelola seluruh sertifikat yang dimiliki.
+                Kelola seluruh sertifikat yang telah diperoleh.
 
-</p>
+            </p>
 
-</div>
+        </div>
 
-<button class="btn btn-primary rounded-4">
+        <a
+            href="{{ route('certificates.create') }}"
+            class="btn btn-primary rounded-4">
 
-<i class="bi bi-upload"></i>
+            <i class="bi bi-plus-circle"></i>
 
-Upload Sertifikat
+            Tambah Sertifikat
 
-</button>
+        </a>
 
-</div>
+    </div>
 
-<div class="row g-4 mt-2">
+    @if(session('success'))
 
-@for($i=1;$i<=6;$i++)
+        <div class="alert alert-success mt-3">
 
-<div class="col-lg-4">
+            {{ session('success') }}
 
-<div class="certificate-card">
+        </div>
 
-<img
+    @endif
 
-src="https://placehold.co/700x500?text=Certificate"
+    <div class="glass-card mt-4">
 
-class="certificate-image">
+        <div class="mb-4">
 
-<div class="certificate-body">
+            <input
+                class="form-control"
+                placeholder="Cari Sertifikat...">
 
-<h5>
+        </div>
 
-Laravel Certification
+        @forelse($certificates as $certificate)
 
-</h5>
+        <div class="achievement-card">
 
-<p>
+            <div class="achievement-icon bg-success">
 
-Dicoding Indonesia
+                <i class="bi bi-award-fill text-white"></i>
 
-</p>
+            </div>
 
-<span class="badge bg-success">
+            <div class="achievement-content">
 
-Verified
+                <h4>
 
-</span>
+                    {{ $certificate->title }}
 
-<div class="certificate-button">
+                </h4>
 
-<button class="btn btn-light">
+                <p>
 
-Detail
+                    {{ $certificate->issuer }}
 
-</button>
+                </p>
 
-<button class="btn btn-primary">
+                <small>
 
-Download
+                    {{ \Carbon\Carbon::parse($certificate->issued_at)->format('d M Y') }}
 
-</button>
+                </small>
 
-</div>
+            </div>
 
-</div>
+            <div>
 
-</div>
+                <a
+                    href="{{ route('certificates.show',$certificate) }}"
+                    class="btn btn-light">
 
-</div>
+                    Detail
 
-@endfor
+                </a>
 
-</div>
+                <a
+                    href="{{ route('certificates.edit',$certificate) }}"
+                    class="btn btn-warning">
+
+                    Edit
+
+                </a>
+
+                <form
+                    action="{{ route('certificates.destroy',$certificate) }}"
+                    method="POST"
+                    class="d-inline">
+
+                    @csrf
+
+                    @method('DELETE')
+
+                    <button
+                        onclick="return confirm('Hapus sertifikat?')"
+                        class="btn btn-danger">
+
+                        Hapus
+
+                    </button>
+
+                </form>
+
+            </div>
+
+        </div>
+
+        <hr>
+
+        @empty
+
+        <div class="text-center py-5">
+
+            <i class="bi bi-award display-1 text-muted"></i>
+
+            <h4 class="mt-3">
+
+                Belum ada sertifikat
+
+            </h4>
+
+            <p class="text-muted">
+
+                Tambahkan sertifikat pertamamu.
+
+            </p>
+
+        </div>
+
+        @endforelse
+
+        <div class="mt-4">
+
+            {{ $certificates->links() }}
+
+        </div>
+
+    </div>
 
 </div>
 
