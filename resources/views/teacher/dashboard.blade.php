@@ -2,7 +2,7 @@
 @section('title', 'Dashboard Guru')
 @section('content')
 <div class="container-fluid">
-    <div class="page-header mb-4"><div><h2 class="fw-bold mb-1">Selamat datang, {{ Auth::user()->name }}! 👋</h2><p class="text-muted mb-0">Berikut ringkasan aktivitas verifikasi portofolio siswa hari ini.</p></div><a href="{{ route('teacher.verifications') }}" class="btn btn-primary rounded-4 px-4"><i class="bi bi-patch-check me-2"></i>Mulai Verifikasi</a></div>
+    <div class="page-header mb-4"><div><h2 class="fw-bold mb-1">Selamat datang, {{ Auth::user()->name }}! 👋</h2><p class="text-muted mb-0">Berikut ringkasan aktivitas verifikasi portofolio siswa hari ini</p></div><a href="{{ route('teacher.verifications') }}" class="btn btn-primary rounded-4 px-4"><i class="bi bi-patch-check me-2"></i>Mulai Verifikasi</a></div>
     <div class="row g-4">
         <div class="col-md-4"><div class="glass-card p-4 h-100"><div class="d-flex justify-content-between align-items-start"><div><p class="text-muted mb-1">Menunggu Verifikasi</p><h2 class="fw-bold mb-0">{{ $pendingAchievements->count() + $pendingCertificates->count() }}</h2></div><div class="rounded-circle bg-warning-subtle text-warning p-3"><i class="bi bi-hourglass-split fs-4"></i></div></div><small class="text-muted">Prestasi dan sertifikat baru</small></div></div>
         <div class="col-md-4"><div class="glass-card p-4 h-100"><div class="d-flex justify-content-between align-items-start"><div><p class="text-muted mb-1">Siswa Terdaftar</p><h2 class="fw-bold mb-0">{{ $totalStudents }}</h2></div><div class="rounded-circle bg-primary-subtle text-primary p-3"><i class="bi bi-people fs-4"></i></div></div><small class="text-muted">Portofolio siswa dalam sistem</small></div></div>
