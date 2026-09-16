@@ -12,6 +12,6 @@ class QrCodeController extends Controller
         $user = Auth::user();
         $portfolioUrl = route('portfolio.show', $user->name);
 
-        return view('qr-code.index', compact('portfolioUrl'));
+        return view('qr-code.index', compact('portfolioUrl', 'user'));
     }
 }

@@ -1,180 +1,87 @@
 document.addEventListener('DOMContentLoaded', () => {
     const sidebar = document.querySelector('.sidebar');
     const menuToggle = document.querySelector('.menu-toggle');
+    const sidebarToggle = document.getElementById('toggleSidebar');
     const darkModeButton = document.getElementById('darkMode');
+    const darkToggle = document.getElementById('darkToggle');
     const themeSwitch = document.getElementById('themeSwitch');
 
+    /* =============================
+       THEME (dark/light)
+    ============================= */
     const setTheme = (isDark) => {
+        document.documentElement.classList.toggle('dark-mode', isDark);
         document.body.classList.toggle('dark', isDark);
+        document.body.classList.toggle('dark-mode', isDark);
         localStorage.setItem('dsp-theme', isDark ? 'dark' : 'light');
         if (darkModeButton) {
             darkModeButton.innerHTML = `<i class="bi bi-${isDark ? 'sun' : 'moon-stars'}"></i>`;
             darkModeButton.setAttribute('aria-label', isDark ? 'Gunakan mode terang' : 'Gunakan mode gelap');
         }
+        if (darkToggle) {
+            darkToggle.innerHTML = `<i class="bi bi-${isDark ? 'sun' : 'moon-stars-fill'}"></i>`;
+        }
         if (themeSwitch) themeSwitch.checked = isDark;
     };
 
-    setTheme(localStorage.getItem('dsp-theme') === 'dark');
+    const savedTheme = localStorage.getItem('dsp-theme') || localStorage.getItem('theme');
+    setTheme(savedTheme === 'dark');
+
     darkModeButton?.addEventListener('click', () => setTheme(!document.body.classList.contains('dark')));
+    darkToggle?.addEventListener('click', () => setTheme(!document.body.classList.contains('dark')));
     themeSwitch?.addEventListener('change', (event) => setTheme(event.target.checked));
-    menuToggle?.addEventListener('click', () => sidebar?.classList.toggle('show'));
+
+    /* =============================
+       SIDEBAR TOGGLE / COLLAPSE
+    ============================= */
+    const toggleSidebar = () => {
+        if (window.innerWidth <= 992) {
+            sidebar?.classList.toggle('show');
+        } else {
+            sidebar?.classList.toggle('collapse');
+        }
+    };
+    menuToggle?.addEventListener('click', toggleSidebar);
+    sidebarToggle?.addEventListener('click', toggleSidebar);
 
     document.addEventListener('click', (event) => {
-        if (window.innerWidth <= 992 && sidebar?.classList.contains('show') && !sidebar.contains(event.target) && !menuToggle?.contains(event.target)) sidebar.classList.remove('show');
+        if (window.innerWidth <= 992 && sidebar?.classList.contains('show')
+            && !sidebar?.contains(event.target) && !menuToggle?.contains(event.target)
+            && !sidebarToggle?.contains(event.target)) {
+            sidebar.classList.remove('show');
+        }
     });
 
+    /* =============================
+       GREETING
+    ============================= */
     const greeting = document.getElementById('greeting');
     if (greeting) {
         const hour = new Date().getHours();
         const timeGreeting = hour < 11 ? 'Selamat pagi' : hour < 15 ? 'Selamat siang' : hour < 18 ? 'Selamat sore' : 'Selamat malam';
-        greeting.textContent = `${timeGreeting}, ${greeting.dataset.name || 'Rafka'} 👋`;
+        greeting.textContent = `${timeGreeting}, ${greeting.dataset.name || 'Pengguna'} 👋`;
     }
 });
 
-document.addEventListener("DOMContentLoaded", () => {
-
-    console.log("Project Module Loaded");
-
+/* =============================
+   LOADING SCREEN
+============================= */
+window.addEventListener('load', () => {
+    const loading = document.getElementById('loadingScreen');
+    if (loading) {
+        setTimeout(() => loading.classList.add('fade-out'), 400);
+        setTimeout(() => loading.remove(), 900);
+    }
 });
 
-document.addEventListener("DOMContentLoaded", function(){
-
-const sidebar=document.querySelector(".sidebar");
-
-const btn=document.getElementById("toggleSidebar");
-
-if(btn){
-
-btn.addEventListener("click",()=>{
-
-sidebar.classList.toggle("collapse");
-
+/* =============================
+   TOAST AUTO-DISMISS
+============================= */
+document.querySelectorAll('.toast-modern').forEach((toast) => {
+    setTimeout(() => {
+        toast.style.transition = 'opacity .4s ease, transform .4s ease';
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(120%)';
+        setTimeout(() => toast.remove(), 400);
+    }, 3500);
 });
-
-}
-
-});
-
-// ===========================
-// DARK MODE
-// ===========================
-
-const darkBtn=document.getElementById("darkToggle");
-
-if(localStorage.theme==="dark"){
-
-document.body.classList.add("dark-mode");
-
-}
-
-darkBtn?.addEventListener("click",()=>{
-
-document.body.classList.toggle("dark-mode");
-
-if(document.body.classList.contains("dark-mode")){
-
-localStorage.theme="dark";
-
-}else{
-
-localStorage.theme="light";
-
-}
-
-});
-
-/* ======================================
-Dashboard Chart
-====================================== */
-
-const chartCanvas = document.getElementById("achievementChart");
-
-if(chartCanvas){
-
-new Chart(chartCanvas,{
-
-type:"line",
-
-data:{
-
-labels:[
-
-"Jan",
-
-"Feb",
-
-"Mar",
-
-"Apr",
-
-"Mei",
-
-"Jun",
-
-"Jul"
-
-],
-
-datasets:[{
-
-label:"Prestasi",
-
-data:[
-
-1,
-
-3,
-
-4,
-
-6,
-
-8,
-
-10,
-
-12
-
-],
-
-fill:true,
-
-borderColor:"#2563eb",
-
-backgroundColor:"rgba(37,99,235,.15)",
-
-tension:.4
-
-}]
-
-},
-
-options:{
-
-responsive:true,
-
-plugins:{
-
-legend:{
-
-display:false
-
-}
-
-},
-
-scales:{
-
-y:{
-
-beginAtZero:true
-
-}
-
-}
-
-}
-
-});
-
-}

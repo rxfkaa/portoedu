@@ -9,7 +9,6 @@ use App\Models\Organization;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use App\Traits\LogsActivity;
 
@@ -121,7 +120,8 @@ class ProfileController extends Controller
         ]);
 
         Auth::user()->update([
-            'password' => Hash::make($data['password'])
+            // User::$casts memastikan password selalu disimpan sebagai hash.
+            'password' => $data['password'],
         ]);
 
         $this->logWithNotification(

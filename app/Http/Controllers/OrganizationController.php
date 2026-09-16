@@ -39,8 +39,7 @@ class OrganizationController extends Controller
         }
 
         $data = $request->validate([
-            'name' => 'required|max:255',
-            'organization_name' => 'nullable|max:255',
+            'organization_name' => 'required|max:255',
             'position' => 'required|max:255',
             'start_date' => 'required|date',
             'end_date' => 'nullable|date|after_or_equal:start_date',
@@ -48,9 +47,7 @@ class OrganizationController extends Controller
         ]);
 
         $data['student_id'] = $student->id;
-        if (empty($data['organization_name'])) {
-            $data['organization_name'] = $data['name'];
-        }
+        $data['name'] = $data['organization_name'];
 
         Organization::create($data);
 
@@ -87,17 +84,14 @@ class OrganizationController extends Controller
         abort_if($organization->student_id !== $student?->id, 403);
 
         $data = $request->validate([
-            'name' => 'nullable|max:255',
-            'organization_name' => 'nullable|max:255',
+            'organization_name' => 'required|max:255',
             'position' => 'required|max:255',
             'start_date' => 'required|date',
             'end_date' => 'nullable|date|after_or_equal:start_date',
             'description' => 'nullable'
         ]);
 
-        if (empty($data['organization_name']) && !empty($data['name'])) {
-            $data['organization_name'] = $data['name'];
-        }
+        $data['name'] = $data['organization_name'];
 
         $organization->update($data);
 
@@ -123,4 +117,3 @@ class OrganizationController extends Controller
             ->with('success', 'Organisasi berhasil dihapus.');
     }
 }
-

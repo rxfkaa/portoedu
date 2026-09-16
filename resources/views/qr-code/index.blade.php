@@ -18,15 +18,26 @@
                 <h3 class="fw-bold">Bagikan profilmu lebih mudah</h3>
                 <p class="text-muted">Pindai kode ini untuk membuka halaman portfolio digital.</p>
 
+@php $qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=' . urlencode($portfolioUrl); @endphp
                 <img class="img-fluid border rounded-4 p-3 my-3" width="250"
-                     src="https://api.qrserver.com/v1/create-qr-code/?size=300x300&data={{ urlencode($portfolioUrl) }}"
-                     alt="QR Code Portfolio">
+                     src="{{ $qrUrl }}"
+                     alt="QR Code Portfolio" id="qrImage">
 
-                <div class="input-group mt-3">
+                <div class="input-group mt-3 mb-3">
                     <input class="form-control" value="{{ $portfolioUrl }}" readonly id="portfolioUrlInput">
                     <button class="btn btn-primary" type="button" onclick="copyUrl()">
                         <i class="bi bi-copy"></i> Salin
                     </button>
+                </div>
+
+                <div class="d-flex justify-content-center gap-2">
+                    <a href="{{ $qrUrl }}" download="qr-portfolio-{{ \Illuminate\Support\Str::slug($user->name ?? 'user') }}.png"
+                       class="btn btn-success rounded-4 px-4">
+                        <i class="bi bi-download me-2"></i>Download QR
+                    </a>
+                    <a href="{{ $portfolioUrl }}" target="_blank" class="btn btn-outline-primary rounded-4 px-4">
+                        <i class="bi bi-box-arrow-up-right me-2"></i>Buka Portfolio
+                    </a>
                 </div>
             </div>
         </div>

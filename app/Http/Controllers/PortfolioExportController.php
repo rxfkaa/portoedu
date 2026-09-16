@@ -9,6 +9,7 @@ use App\Models\Certificate;
 use App\Models\Organization;
 use App\Models\Skill;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Traits\LogsActivity;
 
@@ -50,7 +51,7 @@ class PortfolioExportController extends Controller
 
         $this->logActivity('Mengekspor portofolio PDF');
 
-        return $pdf->download('portofolio-' . $user->name . '.pdf');
+        return $pdf->download('portofolio-' . Str::slug($user->name) . '.pdf');
     }
 
     public function exportStudentPdf(Student $student)
@@ -80,6 +81,6 @@ class PortfolioExportController extends Controller
             'isRemoteEnabled' => true,
         ]);
 
-        return $pdf->download('portofolio-' . $user->name . '.pdf');
+        return $pdf->download('portofolio-' . Str::slug($user->name) . '.pdf');
     }
 }

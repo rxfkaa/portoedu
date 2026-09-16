@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use App\Models\Student;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -34,7 +35,12 @@ class ExampleTest extends TestCase
 
     public function test_portfolio_pages_are_available_to_authenticated_users(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role' => 'student', 'status' => 'active']);
+        Student::create([
+            'user_id' => $user->id,
+            'nis' => 'TEST-' . $user->id,
+            'name' => $user->name,
+        ]);
 
         foreach ([
             'dashboard', 'profile', 'achievements.index', 'achievements.create',

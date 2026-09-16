@@ -54,7 +54,7 @@
 
         <div class="row">
 
-            <div class="col-lg-5">
+<div class="col-lg-5">
 
                 @if($certificate->image)
 
@@ -69,6 +69,23 @@
                         class="img-fluid rounded shadow">
 
                 @endif
+
+                {{-- QR VERIFIKASI --}}
+                <div class="text-center mt-4 p-3 rounded-4 border">
+                    <p class="fw-bold mb-2"><i class="bi bi-qr-code me-1"></i> QR Verifikasi Keaslian</p>
+                    <img
+                        src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data={{ urlencode(route('verify.certificate', $certificate->id)) }}"
+                        class="img-fluid rounded-3"
+                        alt="QR Verifikasi Sertifikat"
+                        style="width:180px;">
+                    <p class="small text-muted mt-2 mb-0">Pindai untuk memverifikasi keaslian sertifikat ini.</p>
+                    <a
+                        href="{{ route('verify.certificate', $certificate->id) }}"
+                        class="btn btn-sm btn-outline-primary mt-2 rounded-pill"
+                        target="_blank">
+                        <i class="bi bi-patch-check-fill me-1"></i> Buka Halaman Verifikasi
+                    </a>
+                </div>
 
             </div>
 
@@ -151,6 +168,28 @@
                         <td>
 
                             {{ $certificate->created_at->diffForHumans() }}
+
+                        </td>
+
+                    </tr>
+
+                    <tr>
+
+                        <th>
+
+                            Status Verifikasi
+
+                        </th>
+
+                        <td>
+
+                            @if($certificate->status === 'verified')
+                                <span class="badge bg-success"><i class="bi bi-check-circle-fill me-1"></i>Verified</span>
+                            @elseif($certificate->status === 'rejected')
+                                <span class="badge bg-danger"><i class="bi bi-x-circle-fill me-1"></i>Ditolak</span>
+                            @else
+                                <span class="badge bg-warning text-dark"><i class="bi bi-hourglass-split me-1"></i>Menunggu</span>
+                            @endif
 
                         </td>
 

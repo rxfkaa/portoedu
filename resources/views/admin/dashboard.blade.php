@@ -80,6 +80,55 @@
         </div>
     </div>
 
+{{-- Statistik Aktivitas (Tracking) --}}
+    <div class="row g-4 mb-4">
+        <div class="col-md-6">
+            <div class="stats-card">
+                <div>
+                    <small>Aktivitas Siswa (7 hari)</small>
+                    <h2>{{ $studentActivity }}</h2>
+                </div>
+                <i class="bi bi-person-fill text-primary fs-1"></i>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="stats-card">
+                <div>
+                    <small>Aktivitas Guru (7 hari)</small>
+                    <h2>{{ $teacherActivity }}</h2>
+                </div>
+                <i class="bi bi-person-badge-fill text-warning fs-1"></i>
+            </div>
+        </div>
+    </div>
+
+    {{-- Aktivitas Terbaru --}}
+    <div class="glass-card p-4 mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h5 class="fw-bold">🔔 Aktivitas Terbaru</h5>
+            <a href="{{ route('admin.activities') }}" class="btn btn-primary btn-sm rounded-3">Lihat Semua</a>
+        </div>
+        @if($recentActivities->isNotEmpty())
+            @foreach($recentActivities as $activity)
+            <div class="d-flex align-items-center gap-3 py-2 {{ !$loop->first ? 'border-top' : '' }}">
+                <div class="rounded-3 p-2 bg-{{ ($activity->user?->role ?? 'student') === 'teacher' ? 'warning' : (($activity->user?->role ?? '') === 'admin' ? 'danger' : 'primary') }}-subtle text-{{ ($activity->user?->role ?? 'student') === 'teacher' ? 'warning' : (($activity->user?->role ?? '') === 'admin' ? 'danger' : 'primary') }}">
+                    <i class="bi bi-{{ ($activity->user?->role ?? 'student') === 'teacher' ? 'person-badge' : (($activity->user?->role ?? '') === 'admin' ? 'shield' : 'person') }}-fill"></i>
+                </div>
+                <div class="flex-grow-1">
+                    <strong>{{ $activity->user?->name ?? 'User Terhapus' }}</strong>
+                    <p class="text-muted small mb-0">{{ $activity->activity }}</p>
+                </div>
+                <small class="text-muted">{{ $activity->created_at->diffForHumans() }}</small>
+            </div>
+            @endforeach
+        @else
+            <div class="text-center py-4">
+                <i class="bi bi-activity display-4 text-muted"></i>
+                <p class="text-muted mt-2 mb-0">Belum ada aktivitas tercatat.</p>
+            </div>
+        @endif
+    </div>
+
     <div class="glass-card p-4">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h5 class="fw-bold">User Terbaru</h5>

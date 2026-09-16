@@ -7,8 +7,13 @@ use App\Models\Student;
 use App\Models\Teacher;
 use App\Models\SchoolClass;
 use App\Models\Department;
+use App\Models\ActivityLog;
+use App\Models\Achievement;
+use App\Models\Certificate;
+use App\Models\Project;
+use App\Models\Notification;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 use App\Traits\LogsActivity;
 
 class AdminController extends Controller
@@ -25,35 +30,144 @@ class AdminController extends Controller
 
     public function dashboard()
     {
+        $totalStudents = Student::count();
+        $totalTeachers = Teacher::count();
+
+        // Statistik portfolio (total data dari siswa)
+        $totalAchievements = Achievement::count();
+        $totalCertificates = Certificate::count();
+        $totalProjects = Project::count();
+
+        // Aktivitas terbaru (tracking siswa & guru)
+        $recentActivities = ActivityLog::with('user')
+            ->latest()
+            ->take(10)
+            ->get();
+
+        // Statistik aktivitas per role (7 hari terakhir)
+        $studentActivity = ActivityLog::whereHas('user', fn($q) => $q->where('role', 'student'))
+            ->whereDate('created_at', '>=', now()->subDays(7))->count();
+        $teacherActivity = ActivityLog::whereHas('user', fn($q) => $q->where('role', 'teacher'))
+            ->whereDate('created_at', '>=', now()->subDays(7))->count();
+
         return view('admin.dashboard', [
             'totalUsers' => User::count(),
-            'totalStudents' => Student::count(),
-            'totalTeachers' => Teacher::count(),
+            'totalStudents' => $totalStudents,
+            'totalTeachers' => $totalTeachers,
             'totalClasses' => SchoolClass::count(),
             'totalDepartments' => Department::count(),
+            'totalAchievements' => $totalAchievements,
+            'totalCertificates' => $totalCertificates,
+            'totalProjects' => $totalProjects,
             'recentUsers' => User::latest()->take(5)->get(),
+            'recentActivities' => $recentActivities,
+            'studentActivity' => $studentActivity,
+            'teacherActivity' => $teacherActivity,
         ]);
     }
 
-    public function users()
+    public function activities()
     {
-        $users = User::with(['student', 'teacher'])->latest()->paginate(15);
-        return view('admin.users', compact('users'));
+        $activities = ActivityLog::with('user')
+            ->latest()
+            ->paginate(20);
+
+        return view('admin.activities', compact('activities'));
     }
 
-    public function updateUser(Request $request, User $user)
+    public function users(Request $request)
+    {
+        $filters = $request->validate([
+            'search' => 'nullable|string|max:255',
+            'status' => 'nullable|in:all,pending,active,rejected',
+            'role' => 'nullable|in:all,student,teacher,admin',
+        ]);
+
+        $users = User::with(['student', 'teacher'])
+            ->when($filters['search'] ?? null, function ($query, $search) {
+                $query->where(fn ($q) => $q->where('name', 'like', "%{$search}%")->orWhere('email', 'like', "%{$search}%"));
+            })
+            ->when(($filters['status'] ?? 'all') !== 'all', fn ($query) => $query->where('status', $filters['status']))
+            ->when(($filters['role'] ?? 'all') !== 'all', fn ($query, $role) => $query->where('role', $role))
+            ->latest()->paginate(15)->withQueryString();
+        $pendingCount = User::where('status', 'pending')->count();
+
+        return view('admin.users', compact('users', 'pendingCount'));
+    }
+
+    public function showUser(User $user)
+    {
+        $user->load(['student.classRoom.department', 'teacher', 'registrationClass.department']);
+
+        return view('admin.user-detail', compact('user'));
+    }
+
+    public function approveUser(Request $request, User $user)
     {
         $data = $request->validate([
-            'name' => 'required|max:255',
-            'email' => 'required|email|unique:users,email,' . $user->id,
-            'role' => 'required|in:admin,teacher,student',
+            'role' => 'required|in:student,teacher',
         ]);
 
-        $user->update($data);
+        if ($user->status !== 'pending') {
+            return back()->with('error', 'Akun ini sudah diproses.');
+        }
 
-        $this->logActivity('Memperbarui user: ' . $user->name . ' (role: ' . $data['role'] . ')');
+        DB::transaction(function () use ($user, $data) {
+            $user->update([
+                'role' => $data['role'],
+                'status' => 'active',
+                'requested_role' => null,
+                'rejection_reason' => null,
+            ]);
 
-        return back()->with('success', 'User berhasil diperbarui.');
+            if ($data['role'] === 'student') {
+                Student::firstOrCreate(
+                    ['user_id' => $user->id],
+                    ['nis' => $user->registration_nis, 'class_id' => $user->registration_class_id, 'name' => $user->name]
+                );
+            } else {
+                Teacher::firstOrCreate(
+                    ['user_id' => $user->id],
+                    ['nip' => $user->registration_nip, 'phone' => $user->registration_phone, 'name' => $user->name]
+                );
+            }
+
+            Notification::create([
+                'user_id' => $user->id,
+                'title' => 'Pendaftaran disetujui',
+                'message' => 'Akun kamu telah disetujui sebagai ' . ($data['role'] === 'teacher' ? 'Guru' : 'Siswa') . '. Selamat datang di PortoEdu!',
+            ]);
+        });
+
+        $this->logActivity('Menyetujui akun ' . $user->name . ' sebagai ' . $data['role']);
+
+        return back()->with('success', 'Akun berhasil disetujui sebagai ' . ($data['role'] === 'teacher' ? 'guru' : 'siswa') . '.');
+    }
+
+    public function rejectUser(Request $request, User $user)
+    {
+        $data = $request->validate([
+            'rejection_reason' => 'required|string|max:1000',
+        ]);
+
+        if ($user->status !== 'pending') {
+            return back()->with('error', 'Hanya pendaftaran yang menunggu yang dapat ditolak.');
+        }
+
+        $user->update([
+            'status' => 'rejected',
+            'rejection_reason' => $data['rejection_reason'],
+        ]);
+
+        Notification::create([
+            'user_id' => $user->id,
+            'title' => 'Pendaftaran ditolak',
+            'message' => 'Pendaftaran kamu ditolak. Alasan: ' . $data['rejection_reason'],
+        ]);
+
+        $this->logActivity('Menolak pendaftaran ' . $user->name);
+
+        return redirect()->route('admin.users')->with('success', 'Pendaftaran ditolak dan alasannya tersimpan.');
     }
 
     public function destroyUser(User $user)

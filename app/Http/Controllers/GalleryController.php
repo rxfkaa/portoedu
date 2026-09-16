@@ -117,7 +117,7 @@ class GalleryController extends Controller
             Storage::disk('public')->delete($gallery->image);
         }
 
-$gallery->delete();
+        $gallery->delete();
 
         $this->logActivity('Menghapus galeri: ' . $title);
 
@@ -125,5 +125,3 @@ $gallery->delete();
             ->with('success', 'Gallery berhasil dihapus.');
     }
 }
-
-

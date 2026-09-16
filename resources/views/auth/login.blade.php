@@ -1,131 +1,45 @@
-<!DOCTYPE html>
-<html lang="id">
+        @extends('layouts.guest')
 
-<head>
+@section('title', 'Masuk | Digital Student Portfolio')
 
-    <meta charset="UTF-8">
-
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <title>Login | Digital Student Portfolio</title>
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.css" rel="stylesheet">
-
-    <link href="{{ asset('assets/css/style.css') }}" rel="stylesheet">
-
-</head>
-
-<body class="login-page">
-
-<div class="login-container">
-
-    <!-- Kiri -->
-    <div class="login-left">
-
-        <div>
-
-            <span class="badge bg-primary rounded-pill px-3 py-2">
-
-                Digital Student Portfolio
-
-            </span>
-
-            <h1 class="mt-4">
-
-                Selamat Datang 👋
-
-            </h1>
-
-            <p>
-
-                Kelola seluruh prestasi, sertifikat, project dan organisasi dalam satu dashboard modern.
-
-            </p>
-
-        </div>
-
-    </div>
-
-    <!-- Kanan -->
-
-    <div class="login-right">
-
-        <div class="login-card">
-
-            <h2 class="fw-bold mb-4">
-
-                Login
-
-            </h2>
-
-            <form action="{{ route('login.store') }}" method="POST">
-
+@section('content')
+<div class="auth-shell">
+    <section class="auth-panel auth-panel--brand">
+        <span class="auth-eyebrow"><i class="bi bi-stars"></i> Digital Student Portfolio</span>
+        <h1>Selamat datang kembali.</h1>
+        <p>Kelola seluruh prestasi, sertifikat, project, dan organisasi dalam satu dashboard modern.</p>
+    </section>
+    <section class="auth-panel auth-panel--form">
+        <div class="auth-form">
+            <a href="{{ route('landing') }}" class="text-decoration-none text-muted small"><i class="bi bi-arrow-left"></i> Kembali ke beranda</a>
+            <h2 class="mt-4 fw-bold">Masuk</h2>
+            <p class="text-muted">Masuk untuk melanjutkan ke dashboard kamu.</p>
+            <form action="{{ route('login.store') }}" method="POST" class="mt-4">
                 @csrf
-
                 <div class="mb-3">
-
-                    <label>Email</label>
-
-                    <input
-                        type="email"
-                        name="email"
-                        class="form-control form-control-lg"
-                        placeholder="Masukkan email"
-                        value="{{ old('email') }}"
-                        required
-                        autofocus>
-
-                    @error('email')
-                        <div class="text-danger small mt-2">{{ $message }}</div>
-                    @enderror
-
+                    <label class="form-label">Email</label>
+                    <input type="email" name="email" value="{{ old('email') }}" class="form-control form-control-lg" placeholder="Masukkan email" required autofocus>
+                    @error('email')<small class="text-danger d-block">{{ $message }}</small>@enderror
                 </div>
-
                 <div class="mb-4">
-
-                    <label>Password</label>
-
-                    <input
-                        type="password"
-                        name="password"
-                        class="form-control form-control-lg"
-                        placeholder="Masukkan password"
-                        required>
-
+                    <label class="form-label">Password</label>
+                    <input type="password" name="password" class="form-control form-control-lg" placeholder="Masukkan password" autocomplete="current-password" required>
+                    @error('password')<small class="text-danger d-block">{{ $message }}</small>@enderror
                 </div>
-
-                <div class="form-check mb-4">
-                    <input class="form-check-input" type="checkbox" name="remember" id="remember">
-                    <label class="form-check-label" for="remember">Ingat saya</label>
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="remember" id="remember">
+                        <label class="form-check-label" for="remember">Ingat saya</label>
+                    </div>
+                    <a href="{{ route('password.request') }}" class="small text-primary text-decoration-none">Lupa password?</a>
                 </div>
-
-                <button
-                    class="btn btn-primary w-100 btn-lg rounded-4">
-
-                    Masuk
-
-                </button>
-
+                @if(session('success'))
+                    <div class="alert alert-success py-2">{{ session('success') }}</div>
+                @endif
+                <button class="btn btn-primary btn-lg w-100 rounded-4">Masuk <i class="bi bi-arrow-right ms-1"></i></button>
             </form>
-
-            <div class="text-center mt-4">
-
-                <a href="{{ route('landing') }}">
-
-                    ← Kembali ke Landing Page
-
-                </a>
-
-            </div>
-
+            <p class="text-center mt-4 mb-0">Belum punya akun? <a href="{{ route('register') }}">Daftar</a></p>
         </div>
-
-    </div>
-
+    </section>
 </div>
-
-</body>
-
-</html>
+@endsection

@@ -20,6 +20,13 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'status',
+        'requested_role',
+        'registration_nis',
+        'registration_class_id',
+        'registration_nip',
+        'registration_phone',
+        'rejection_reason',
     ];
 
     protected $hidden = [
@@ -51,6 +58,11 @@ class User extends Authenticatable
         return $this->hasOne(Teacher::class);
     }
 
+    public function registrationClass()
+    {
+        return $this->belongsTo(SchoolClass::class, 'registration_class_id');
+    }
+
     public function notifications()
     {
         return $this->hasMany(Notification::class);
@@ -72,9 +84,18 @@ class User extends Authenticatable
         return $this->role === 'teacher';
     }
 
+    public function isStudent(): bool
+    {
+        return $this->role === 'student';
+    }
+
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
     }
-}
 
+    public function isActive(): bool
+    {
+        return $this->status === 'active';
+    }
+}

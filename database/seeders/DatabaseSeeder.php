@@ -18,7 +18,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+// User::factory(10)->create();
 
         User::query()->firstOrCreate([
             'email' => 'test@example.com',
@@ -28,12 +28,16 @@ class DatabaseSeeder extends Seeder
             'password' => Hash::make('password'),
         ]);
 
+        // Admin user untuk tracking aktivitas siswa & guru
+        $adminUser = User::query()->firstOrCreate(['email' => 'admin@dsp.test'], ['name' => 'Administrator', 'email_verified_at' => now(), 'password' => Hash::make('password'), 'role' => 'admin', 'status' => 'active']);
+        $adminUser->update(['role' => 'admin', 'status' => 'active']);
+
         $teacherUser = User::query()->firstOrCreate(['email' => 'guru@dsp.test'], ['name' => 'Ibu Dini Pratiwi', 'email_verified_at' => now(), 'password' => Hash::make('password'), 'role' => 'teacher']);
-        $teacherUser->update(['role' => 'teacher']);
+        $teacherUser->update(['role' => 'teacher', 'status' => 'active']);
         $teacher = Teacher::query()->firstOrCreate(['user_id' => $teacherUser->id], ['nip' => '198907152014012001', 'name' => 'Ibu Dini Pratiwi', 'subject' => 'Produktif RPL', 'phone' => '081234567890']);
 
         $studentUser = User::query()->firstOrCreate(['email' => 'siswa@dsp.test'], ['name' => 'Rafka Aleandra', 'email_verified_at' => now(), 'password' => Hash::make('password'), 'role' => 'student']);
-        $studentUser->update(['role' => 'student']);
+        $studentUser->update(['role' => 'student', 'status' => 'active']);
         $student = Student::query()->firstOrCreate(['user_id' => $studentUser->id], ['nis' => '2026001', 'nisn' => '0061234567', 'name' => 'Rafka Aleandra']);
         Achievement::query()->firstOrCreate(['student_id' => $student->id, 'title' => 'Juara 1 LKS Web Technology'], ['category' => 'Kompetisi', 'level' => 'Provinsi', 'organizer' => 'Dinas Pendidikan', 'date' => now()->subDays(7), 'status' => 'pending']);
         Certificate::query()->firstOrCreate(['student_id' => $student->id, 'title' => 'Sertifikasi UI/UX Design'], ['category' => 'Kompetensi', 'issuer' => 'Dicoding Indonesia', 'issued_at' => now()->subDays(14), 'status' => 'pending']);
@@ -61,7 +65,7 @@ class DatabaseSeeder extends Seeder
             ['Joko Firmansyah', 'joko.firmansyah@dsp.test', '2026011', 'Sistem Peminjaman Alat', 'Juara 2 Kompetisi Web', 'Sertifikat Git dan GitHub', 'RPL'],
         ];
         foreach ($students as $index => [$name, $email, $nis, $projectTitle, $achievementTitle, $certificateTitle, $major]) {
-            $user = User::query()->updateOrCreate(['email' => $email], ['name' => $name, 'email_verified_at' => now(), 'password' => Hash::make('password'), 'role' => 'student']);
+            $user = User::query()->updateOrCreate(['email' => $email], ['name' => $name, 'email_verified_at' => now(), 'password' => Hash::make('password'), 'role' => 'student', 'status' => 'active']);
             $profile = Student::query()->updateOrCreate(['user_id' => $user->id], ['class_id' => $major === 'RPL' ? $rplClass : $dkvClass, 'nis' => $nis, 'nisn' => '00612345'.str_pad((string) $index, 2, '0', STR_PAD_LEFT), 'name' => $name, 'gender' => $index % 2 ? 'L' : 'P', 'phone' => '0812345678', 'bio' => 'Siswa aktif yang terus mengembangkan karya dan prestasi.']);
             Achievement::query()->updateOrCreate(['student_id' => $profile->id, 'title' => $achievementTitle], ['category' => 'Kompetisi', 'level' => $index % 3 === 0 ? 'Nasional' : 'Kota', 'organizer' => 'Komite Kompetisi Pelajar', 'date' => now()->subDays(10 + $index), 'status' => $index < 5 ? 'pending' : 'verified', 'verified_by' => $index >= 5 ? $teacher->id : null, 'verified_at' => $index >= 5 ? now()->subDays($index) : null]);
             Certificate::query()->updateOrCreate(['student_id' => $profile->id, 'title' => $certificateTitle], ['category' => 'Kompetensi', 'issuer' => 'Digital Talent School', 'issued_at' => now()->subDays(25 + $index), 'status' => $index % 2 ? 'pending' : 'verified', 'verified_by' => $index % 2 ? null : $teacher->id, 'verified_at' => $index % 2 ? null : now()->subDays($index)]);

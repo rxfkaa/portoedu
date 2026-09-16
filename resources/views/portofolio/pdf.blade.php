@@ -91,7 +91,7 @@
         @foreach($achievements as $item)
         <div class="item">
             <h4>{{ $item->title }}</h4>
-            <p>{{ $item->level }} · {{ $item->organizer }} · {{ $item->date->format('d M Y') ?? '-' }}</p>
+<p>{{ $item->level }} · {{ $item->organizer }}@if($item->date) · {{ $item->date->format('d M Y') }}@endif</p>
             @if($item->description)<small>{{ $item->description }}</small>@endif
         </div>
         @endforeach
@@ -117,7 +117,7 @@
         @foreach($certificates as $certificate)
         <div class="item">
             <h4>{{ $certificate->title }}</h4>
-            <p>{{ $certificate->issuer }} · {{ $certificate->issued_at->format('d M Y') }}</p>
+            <p>{{ $certificate->issuer }}@if($certificate->issued_at) · {{ $certificate->issued_at->format('d M Y') }}@endif</p>
             @if($certificate->certificate_number)<small>No: {{ $certificate->certificate_number }}</small>@endif
         </div>
         @endforeach

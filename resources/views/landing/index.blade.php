@@ -1,4 +1,4 @@
-@extends('layouts.guest')
+@extends('landing.guest')
 
 @section('title', 'PortoEdu | Digital Student Portfolio')
 
@@ -53,10 +53,19 @@
 
                     </a>
 
-                    <a href="{{ route('login') }}"
+<a href="{{ route('login') }}"
                         class="btn btn-outline-light btn-lg rounded-pill px-4 ms-3">
 
                         Login
+
+                    </a>
+
+                    <a href="{{ route('students.index') }}"
+                        class="btn btn-outline-light btn-lg rounded-pill px-4 ms-3 mt-2 mt-sm-0">
+
+                        <i class="bi bi-people-fill me-2"></i>
+
+                        Direktori Siswa
 
                     </a>
 
@@ -116,10 +125,10 @@
 
             </div>
 
-            <div class="col-lg-6 text-center">
+<div class="col-lg-6 text-center">
 
                 <img
-                    src="{{ asset('assets/images/hero-dashboard.png') }}"
+                    src="{{ asset('assets/images/dashboard-preview.png') }}"
                     class="hero-image img-fluid">
 
             </div>
@@ -273,11 +282,11 @@
 
         <div class="row align-items-center">
 
-            <div class="col-lg-6">
+<div class="col-lg-6">
 
                 <img
-                    src="{{ asset('assets/images/about-dashboard.png') }}"
-                    class="img-fluid">
+                    src="{{ asset('assets/images/dashboard-preview.png') }}"
+                    class="img-fluid rounded-4 shadow-lg">
 
             </div>
 

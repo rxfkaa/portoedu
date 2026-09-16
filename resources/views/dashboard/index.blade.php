@@ -127,6 +127,86 @@
 
     </div>
 
+{{-- BADGE & LEVEL --}}
+
+    <div class="row mt-4 g-4">
+
+        <div class="col-lg-4">
+
+            <div class="chart-card d-flex align-items-center gap-3">
+
+                <div class="display-4">{{ $currentBadge['icon'] }}</div>
+
+                <div>
+
+                    <small class="text-muted">Level Portfolio</small>
+
+                    <h4 class="fw-bold mb-1">{{ $currentBadge['level'] }}</h4>
+
+                    <div class="progress mt-2" style="height:8px; width:150px;">
+
+                        <div class="progress-bar bg-primary" style="width: {{ $nextProgress }}%"></div>
+
+                    </div>
+
+                    @if($nextBadge)
+                        <small class="text-muted">{{ $nextProgress }}% menuju {{ $nextBadge['icon'] }} {{ $nextBadge['level'] }}</small>
+                    @else
+                        <small class="text-success">Level maksimal tercapai! 🎉</small>
+                    @endif
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-4">
+
+            <div class="chart-card d-flex align-items-center gap-3">
+
+                <div class="display-4">⭐</div>
+
+                <div>
+
+                    <small class="text-muted">Total Poin</small>
+
+                    <h4 class="fw-bold mb-0">{{ number_format($score) }}</h4>
+
+                    <small class="text-muted">Dari prestasi, sertifikat & project</small>
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-lg-4">
+
+            <div class="chart-card d-flex align-items-center gap-3">
+
+                <div class="display-4">🎯</div>
+
+                <div>
+
+                    <small class="text-muted">Kelengkapan Portfolio</small>
+
+                    <h4 class="fw-bold mb-0">{{ number_format($progress) }}%</h4>
+
+                    <div class="progress mt-2" style="height:8px;">
+
+                        <div class="progress-bar bg-success" style="width: {{ $progress }}%"></div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
     {{-- QUICK MENU --}}
 
     <div class="row mt-4 g-4">
@@ -237,7 +317,7 @@
 
         <div class="chart-card">
 
-            <div class="d-flex justify-content-between align-items-center mb-4">
+<div class="d-flex justify-content-between align-items-center mb-4">
 
                 <h5 class="fw-bold">
 
@@ -253,7 +333,7 @@
 
             </div>
 
-            <canvas id="achievementChart"></canvas>
+            <canvas id="achievementChart" height="110"></canvas>
 
         </div>
 
@@ -524,3 +604,34 @@
 </div>
 
 @endsection
+
+@push('scripts')
+<script>
+    var monthlyData = [{{ $monthlyDataStr }}];
+    var chartCanvas = document.getElementById('achievementChart');
+    if (chartCanvas && typeof Chart !== 'undefined') {
+        var ctx = chartCanvas.getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'],
+                datasets: [{
+                    label: 'Aktivitas',
+                    data: monthlyData,
+                    fill: true,
+                    borderColor: '#2563eb',
+                    backgroundColor: 'rgba(37,99,235,.15)',
+                    tension: .4,
+                    pointBackgroundColor: '#2563eb'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { y: { beginAtZero: true, ticks: { precision: 0 } } }
+            }
+        });
+    }
+</script>
+@endpush

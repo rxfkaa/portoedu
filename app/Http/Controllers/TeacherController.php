@@ -11,7 +11,7 @@ class TeacherController extends Controller
 
     private function teacher(Request $request)
     {
-        abort_unless($request->user()?->isTeacher() || $request->user()?->isAdmin(), 403, 'Halaman ini khusus guru dan admin.');
+        abort_unless($request->user()?->isTeacher(), 403, 'Halaman ini khusus guru.');
         return $request->user()->teacher;
     }
 
@@ -35,9 +35,22 @@ class TeacherController extends Controller
         ]);
     }
 
+    public function projects(Request $request)
+    {
+        $this->teacher($request);
+
+        $projects = Project::with([
+            'student.user',
+            'comments.teacher',
+        ])->latest()->paginate(12);
+
+        return view('teacher.projects', compact('projects'));
+    }
+
     public function verify(Request $request, string $type, int $id)
     {
         $teacher = $this->teacher($request);
+        abort_unless(in_array($type, ['achievement', 'certificate'], true), 404);
         $model = $type === 'achievement' ? Achievement::findOrFail($id) : Certificate::findOrFail($id);
         $data = $request->validate(['status' => 'required|in:verified,rejected']);
 
@@ -60,10 +73,43 @@ class TeacherController extends Controller
         return back()->with('success', 'Data berhasil ' . $statusLabel . '.');
     }
 
-    public function projects(Request $request)
+public function statistics(Request $request)
     {
         $this->teacher($request);
-        return view('teacher.projects', ['projects' => Project::with(['student.user', 'comments.teacher.user'])->latest()->paginate(12)]);
+
+        // Validasi dan filter jurusan
+        $departmentId = $request->department_id;
+        $classId = $request->class_id;
+
+        // Data per kelas (jumlah prestasi + sertifikat)
+        $classData = \App\Models\SchoolClass::query()
+            ->with('department')
+            ->withCount([
+                'students as achievement_count' => function ($q) {
+                    $q->whereHas('achievements');
+                },
+                'students as certificate_count' => function ($q) {
+                    $q->whereHas('certificates');
+                },
+            ])
+            ->when($departmentId, fn ($q) => $q->where('department_id', $departmentId))
+            ->orderByDesc('achievement_count')
+            ->get();
+
+        $departments = \App\Models\Department::orderBy('name')->get();
+
+        // Ranking siswa berdasarkan jumlah prestasi
+        $ranking = \App\Models\Student::query()
+            ->with('user')
+            ->withCount('achievements')
+            ->withCount('projects')
+            ->withCount('certificates')
+            ->when($classId, fn ($q) => $q->where('class_id', $classId))
+            ->orderByDesc('achievements_count')
+            ->take(20)
+            ->get();
+
+        return view('teacher.statistics', compact('classData', 'departments', 'ranking', 'departmentId', 'classId'));
     }
 
     public function comment(Request $request, Project $project)
