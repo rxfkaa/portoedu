@@ -77,7 +77,7 @@
                     </a>
                 </li>
                 <li>
-                    @php $portfolioUsername = Auth::user()->name ?? 'username'; @endphp
+                    @php $portfolioUsername = Auth::user()->username ?? Auth::user()->name ?? 'username'; @endphp
                     <a class="dropdown-item" href="{{ route('portfolio.show', $portfolioUsername) }}">
                         <i class="bi bi-folder me-2"></i>Portfolio
                     </a>
@@ -108,4 +108,3 @@
     </div>
 
 </nav>
-

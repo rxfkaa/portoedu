@@ -6,7 +6,24 @@ use Illuminate\Database\Eloquent\Model;
 
 class Student extends Model
 {
-    protected $guarded = [];
+    protected $fillable = [
+        'user_id',
+        'class_id',
+        'nis',
+        'nisn',
+        'name',
+        'birth_place',
+        'birth_date',
+        'gender',
+        'address',
+        'phone',
+        'photo',
+        'bio',
+        'github',
+        'linkedin',
+        'website',
+        'instagram',
+    ];
 
     protected $casts = [
         'birth_date' => 'date',

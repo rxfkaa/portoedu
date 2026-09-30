@@ -132,4 +132,44 @@ class ProfileController extends Controller
 
         return back()->with('success', 'Password berhasil diubah.');
     }
+
+    public function destroy(Request $request)
+    {
+        $request->validate([
+            'current_password' => ['required', 'current_password'],
+        ]);
+
+        $user = $request->user();
+        $student = $user->student;
+        $files = collect([$student?->photo]);
+
+        if ($student) {
+            $files = $files
+                ->merge($student->achievements()->pluck('image'))
+                ->merge($student->achievements()->pluck('proof'))
+                ->merge($student->certificates()->pluck('image'))
+                ->merge($student->certificates()->pluck('file'))
+                ->merge($student->projects()->pluck('image'))
+                ->merge($student->projects()->pluck('thumbnail'))
+                ->merge($student->galleries()->pluck('image'))
+                ->merge($student->galleries()->pluck('photo'));
+        }
+
+        // Relasi portfolio menggunakan foreign key cascade; data milik akun
+        // terhapus bersama akun tanpa menyentuh data pengguna lain.
+        // Use the primary key explicitly so the currently authenticated model
+        // cannot be retained by a stale relation or session instance.
+        \App\Models\User::query()->whereKey($user->getKey())->delete();
+
+        $paths = $files->filter()->unique()->values()->all();
+        if ($paths) {
+            Storage::disk('public')->delete($paths);
+        }
+
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('landing')->with('success', 'Akun dan data portfolio berhasil dihapus.');
+    }
 }

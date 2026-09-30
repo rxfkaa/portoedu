@@ -286,20 +286,20 @@
         <div class="col-lg-3">
 
             <a
-                href="{{ route('profile') }}"
+                href="{{ route('organizations.index') }}"
                 class="quick-card">
 
-                <i class="bi bi-person-fill"></i>
+                <i class="bi bi-people-fill"></i>
 
                 <h5>
 
-                    Profile
+                Organisasi
 
                 </h5>
 
                 <p>
 
-                    Edit profil.
+                Kelola pengalaman organisasi.
 
                 </p>
 
@@ -357,7 +357,7 @@
 
             <p class="text-muted">
 
-                Tingkat kelengkapan portfolio kamu.
+                Dihitung dari total prestasi, project, sertifikat, dan organisasi; target lengkap adalah 40 data.
 
             </p>
 

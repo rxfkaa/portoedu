@@ -19,6 +19,7 @@ class Achievement extends Model
         'status',
         'verified_by',
         'verified_at',
+        'rejection_reason',
     ];
 
     protected $casts = [
@@ -36,4 +37,3 @@ class Achievement extends Model
         return $this->belongsTo(Teacher::class, 'verified_by');
     }
 }
-

@@ -74,7 +74,7 @@
             <div class="row g-4">
                 @foreach($students as $student)
                     <div class="col-sm-6 col-lg-4 col-xl-3">
-                        <a href="{{ route('portfolio.show', $student->user?->name ?? $student->name) }}" class="student-card">
+                        <a href="{{ route('portfolio.show', $student->user?->username ?? $student->user?->name ?? $student->name) }}" class="student-card">
                             @php $photo = $student->photo ?? 'https://ui-avatars.com/api/?name=' . urlencode($student->name) . '&background=2563EB&color=fff&size=120'; @endphp
                             <img src="{{ $student->photo ? asset('storage/' . $student->photo) : $photo }}" alt="{{ $student->name }}">
                             <h5>{{ $student->name }}</h5>

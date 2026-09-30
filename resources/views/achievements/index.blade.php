@@ -34,6 +34,9 @@
                     <span class="badge bg-{{ $item->status === 'verified' ? 'success' : ($item->status === 'rejected' ? 'danger' : 'warning') }} fs-6">
                         {{ $item->status === 'verified' ? 'Terverifikasi' : ($item->status === 'rejected' ? 'Ditolak' : 'Menunggu') }}
                     </span>
+                    @if($item->status === 'rejected' && $item->rejection_reason)
+                        <small class="d-block text-danger mt-1">{{ $item->rejection_reason }}</small>
+                    @endif
                 </div>
                 <div class="d-flex gap-2">
                     <a href="{{ route('achievements.show', $item->id) }}" class="btn btn-outline-primary btn-sm rounded-3">Detail</a>

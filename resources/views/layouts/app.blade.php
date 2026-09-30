@@ -76,7 +76,7 @@
 
 {{-- Floating Button (Siswa only) --}}
 @if(Auth::check() && !Auth::user()?->isTeacher() && !Auth::user()?->isAdmin())
-    <a href="{{ route('achievements.create') }}" class="floating-button">
+    <a href="{{ route('achievements.create') }}" class="floating-button" aria-label="Tambah prestasi" title="Tambah prestasi">
         <i class="bi bi-plus-lg"></i>
     </a>
 @endif

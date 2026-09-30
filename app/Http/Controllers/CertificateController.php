@@ -45,13 +45,18 @@ class CertificateController extends Controller
             'issuer' => 'required|max:255',
             'issued_at' => 'required|date',
             'certificate_number' => 'nullable|max:255',
-            'image' => 'nullable|image|max:2048'
+            'image' => 'nullable|image|max:2048',
+            'file' => 'nullable|file|mimes:pdf|max:5120',
         ]);
 
         $data['student_id'] = $student->id;
 
         if ($request->hasFile('image')) {
             $data['image'] = $request->file('image')->store('certificates', 'public');
+        }
+
+        if ($request->hasFile('file')) {
+            $data['file'] = $request->file('file')->store('certificates', 'public');
         }
 
         Certificate::create($data);
@@ -94,7 +99,8 @@ class CertificateController extends Controller
             'issuer' => 'required',
             'issued_at' => 'required|date',
             'certificate_number' => 'nullable',
-            'image' => 'nullable|image|max:2048'
+            'image' => 'nullable|image|max:2048',
+            'file' => 'nullable|file|mimes:pdf|max:5120',
         ]);
 
         if ($request->hasFile('image')) {
@@ -104,13 +110,25 @@ class CertificateController extends Controller
             $data['image'] = $request->file('image')->store('certificates', 'public');
         }
 
+        if ($request->hasFile('file')) {
+            if ($certificate->file) {
+                Storage::disk('public')->delete($certificate->file);
+            }
+            $data['file'] = $request->file('file')->store('certificates', 'public');
+        }
+
+        // Pengubahan sertifikat harus melalui proses verifikasi kembali.
+        $data['status'] = 'pending';
+        $data['verified_by'] = null;
+        $data['verified_at'] = null;
+
         $certificate->update($data);
 
         $this->logActivity('Memperbarui sertifikat: ' . $data['title']);
 
         return redirect()
             ->route('certificates.index')
-            ->with('success', 'Sertifikat berhasil diperbarui.');
+            ->with('success', 'Sertifikat berhasil diperbarui dan menunggu verifikasi ulang.');
     }
 
     public function destroy(Certificate $certificate)
@@ -122,6 +140,9 @@ class CertificateController extends Controller
 
         if ($certificate->image) {
             Storage::disk('public')->delete($certificate->image);
+        }
+        if ($certificate->file) {
+            Storage::disk('public')->delete($certificate->file);
         }
 
         $certificate->delete();

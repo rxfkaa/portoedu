@@ -99,7 +99,7 @@
             @endforeach
         </div>
         <div class="mt-4 d-flex justify-content-center gap-2">
-            <button class="btn btn-light btn-sm rounded-pill px-3" onclick="navigator.clipboard.writeText(window.location.href);alert('Link portfolio disalin!')">
+            <button class="btn btn-light btn-sm rounded-pill px-3" type="button" onclick="sharePortfolio()">
                 <i class="bi bi-share me-1"></i>Share
             </button>
         </div>
@@ -354,3 +354,37 @@
 </div>
 @endsection
 
+@push('scripts')
+<script>
+async function sharePortfolio() {
+    const shareData = { title: document.title, url: window.location.href };
+    try {
+        if (navigator.share) {
+            await navigator.share(shareData);
+            return;
+        }
+    } catch (error) {
+        if (error.name === 'AbortError') return;
+    }
+
+    try {
+        if (navigator.clipboard?.writeText) {
+            await navigator.clipboard.writeText(window.location.href);
+        } else {
+            const input = document.createElement('textarea');
+            input.value = window.location.href;
+            input.style.position = 'fixed';
+            input.style.opacity = '0';
+            document.body.appendChild(input);
+            input.select();
+            const copied = document.execCommand('copy');
+            input.remove();
+            if (!copied) throw new Error('Copy unavailable');
+        }
+        alert('Link portfolio berhasil disalin.');
+    } catch (error) {
+        alert('Link tidak dapat dibagikan. Silakan salin URL dari browser.');
+    }
+}
+</script>
+@endpush

@@ -108,13 +108,19 @@ class AchievementController extends Controller
             $data['image'] = $request->file('image')->store('achievements', 'public');
         }
 
+        // Data yang diubah perlu diperiksa guru kembali sebelum ditampilkan
+        // di portfolio publik.
+        $data['status'] = 'pending';
+        $data['verified_by'] = null;
+        $data['verified_at'] = null;
+
         $achievement->update($data);
 
         $this->logActivity('Memperbarui prestasi: ' . $data['title']);
 
         return redirect()
             ->route('achievements.index')
-            ->with('success', 'Prestasi berhasil diperbarui.');
+            ->with('success', 'Prestasi berhasil diperbarui dan menunggu verifikasi ulang.');
     }
 
     public function destroy(Achievement $achievement)

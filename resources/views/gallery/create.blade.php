@@ -37,7 +37,7 @@
                         <div class="upload-box text-center" onclick="document.getElementById('imageInput').click()">
                             <i class="bi bi-cloud-arrow-up-fill display-4 text-primary"></i>
                             <h6 class="mt-2">Klik untuk Upload</h6>
-                            <small class="text-muted">PNG, JPG (Max 2MB)</small>
+                            <small class="text-muted">JPG, JPEG, PNG, atau WEBP (maks. 2 MB)</small>
                             <input type="file" name="image" id="imageInput" class="d-none" accept="image/*" required>
                         </div>
                         <img id="preview" class="img-fluid rounded-3 mt-3 d-none">

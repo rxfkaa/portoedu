@@ -18,10 +18,14 @@
                 <h3 class="fw-bold">Bagikan profilmu lebih mudah</h3>
                 <p class="text-muted">Pindai kode ini untuk membuka halaman portfolio digital.</p>
 
-@php $qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=' . urlencode($portfolioUrl); @endphp
+@php $qrUrl = route('qr-code.image'); @endphp
                 <img class="img-fluid border rounded-4 p-3 my-3" width="250"
                      src="{{ $qrUrl }}"
-                     alt="QR Code Portfolio" id="qrImage">
+                     alt="QR Code Portfolio" id="qrImage"
+                     onerror="this.hidden=true; document.getElementById('qrUnavailable').classList.remove('d-none');">
+                <div id="qrUnavailable" class="alert alert-warning d-none text-start">
+                    QR Code tidak dapat dibuat. Gunakan tombol Salin untuk membagikan URL portfolio.
+                </div>
 
                 <div class="input-group mt-3 mb-3">
                     <input class="form-control" value="{{ $portfolioUrl }}" readonly id="portfolioUrlInput">
@@ -31,7 +35,7 @@
                 </div>
 
                 <div class="d-flex justify-content-center gap-2">
-                    <a href="{{ $qrUrl }}" download="qr-portfolio-{{ \Illuminate\Support\Str::slug($user->name ?? 'user') }}.png"
+                    <a href="{{ route('qr-code.image', ['download' => 1]) }}"
                        class="btn btn-success rounded-4 px-4">
                         <i class="bi bi-download me-2"></i>Download QR
                     </a>
@@ -51,10 +55,17 @@ function copyUrl() {
     var input = document.getElementById('portfolioUrlInput');
     input.select();
     input.setSelectionRange(0, 99999);
-    navigator.clipboard.writeText(input.value).then(function() {
-        alert('Link portfolio berhasil disalin!');
-    });
+    const fallbackCopy = function () {
+        const copied = document.execCommand('copy');
+        alert(copied ? 'Link portfolio berhasil disalin!' : 'Silakan salin URL portfolio secara manual.');
+    };
+    if (navigator.clipboard?.writeText) {
+        navigator.clipboard.writeText(input.value).then(function () {
+            alert('Link portfolio berhasil disalin!');
+        }).catch(fallbackCopy);
+        return;
+    }
+    fallbackCopy();
 }
 </script>
 @endpush
-

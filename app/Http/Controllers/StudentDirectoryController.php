@@ -11,7 +11,12 @@ class StudentDirectoryController extends Controller
      */
     public function index()
     {
-        $query = Student::with(['user', 'classRoom.department']);
+        // Jangan mengekspos siswa yang memilih portfolio privat di direktori publik.
+        $query = Student::with(['user', 'classRoom.department'])
+            ->where(function ($query) {
+                $query->whereDoesntHave('portfolioSetting')
+                    ->orWhereHas('portfolioSetting', fn ($setting) => $setting->where('is_public', true));
+            });
 
         // Filter pencarian
         if ($search = request('search')) {

@@ -52,9 +52,17 @@ class TeacherController extends Controller
         $teacher = $this->teacher($request);
         abort_unless(in_array($type, ['achievement', 'certificate'], true), 404);
         $model = $type === 'achievement' ? Achievement::findOrFail($id) : Certificate::findOrFail($id);
-        $data = $request->validate(['status' => 'required|in:verified,rejected']);
+        $data = $request->validate([
+            'status' => 'required|in:verified,rejected',
+            'rejection_reason' => 'nullable|required_if:status,rejected|string|max:1000',
+        ]);
 
-        $model->update(['status' => $data['status'], 'verified_by' => $teacher->id ?? null, 'verified_at' => now()]);
+        $model->update([
+            'status' => $data['status'],
+            'verified_by' => $teacher->id ?? null,
+            'verified_at' => now(),
+            'rejection_reason' => $data['status'] === 'rejected' ? $data['rejection_reason'] : null,
+        ]);
 
         $statusLabel = $data['status'] === 'verified' ? 'diverifikasi' : 'ditolak';
 
@@ -64,7 +72,8 @@ class TeacherController extends Controller
             Notification::create([
                 'user_id' => $model->student->user->id,
                 'title' => $title . ' ' . $statusLabel,
-                'message' => $title . ' "' . $model->title . '" telah ' . $statusLabel . ' oleh guru.',
+                'message' => $title . ' "' . $model->title . '" telah ' . $statusLabel . ' oleh guru.'
+                    . ($data['status'] === 'rejected' ? ' Alasan: ' . $model->rejection_reason : ''),
             ]);
         }
 
@@ -131,5 +140,24 @@ public function statistics(Request $request)
         $this->logActivity('Memberikan komentar pada project: ' . $project->title);
 
         return back()->with('success', 'Masukan berhasil dikirim ke siswa.');
+    }
+
+    public function updateComment(Request $request, Comment $comment)
+    {
+        $teacher = $this->teacher($request);
+        abort_unless($comment->teacher_id === $teacher?->id, 403);
+        $data = $request->validate(['comment' => 'required|string|max:2000']);
+        $comment->update($data);
+
+        return back()->with('success', 'Masukan berhasil diperbarui.');
+    }
+
+    public function destroyComment(Request $request, Comment $comment)
+    {
+        $teacher = $this->teacher($request);
+        abort_unless($comment->teacher_id === $teacher?->id, 403);
+        $comment->delete();
+
+        return back()->with('success', 'Masukan berhasil dihapus.');
     }
 }

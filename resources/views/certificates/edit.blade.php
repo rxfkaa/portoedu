@@ -133,6 +133,15 @@
                     class="form-control"
                     accept="image/*">
 
+                <small class="text-muted">Gambar: JPG, JPEG, PNG, atau WEBP, maksimal 2 MB.</small>
+
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Ganti File Sertifikat (PDF, opsional)</label>
+                <input type="file" name="file" class="form-control" accept="application/pdf">
+                <small class="text-muted">PDF maksimal 5 MB.</small>
+                @error('file')<div class="text-danger small">{{ $message }}</div>@enderror
             </div>
 
             <div class="text-center mb-4">

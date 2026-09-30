@@ -91,18 +91,30 @@ Route::prefix('verify')->name('verify.')->group(function () {
 |--------------------------------------------------------------------------
 */
 
-Route::middleware('guest')->group(function () {
+Route::get('/login', function (Request $request) {
+        // Membuka halaman login berarti pengguna ingin memakai akun lain.
+        // Ini penting jika sesi "ingat saya" dari akun sebelumnya masih aktif.
+        if (Auth::check()) {
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+        }
 
-    Route::get('/login', function () {
         return view('auth.login');
     })->name('login');
+
+Route::middleware('guest')->group(function () {
 
     Route::post('/login', function (Request $request) {
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
+            'login_as' => ['nullable', 'in:student,teacher'],
         ]);
-        if (!Auth::attempt($credentials, $request->boolean('remember'))) {
+        if (!Auth::attempt([
+            'email' => $credentials['email'],
+            'password' => $credentials['password'],
+        ], $request->boolean('remember'))) {
             return back()->withErrors(['email' => 'Email atau password salah.'])->onlyInput('email');
         }
 
@@ -114,9 +126,19 @@ Route::middleware('guest')->group(function () {
             return back()->withErrors(['email' => $message])->onlyInput('email');
         }
 
+        // Siswa dan guru hanya dapat memakai pintu masuk sesuai perannya.
+        // Admin sengaja tidak dibatasi supaya dapat menggunakan pilihan mana pun.
+        $selectedRole = $credentials['login_as'] ?? null;
+        if ($selectedRole && !Auth::user()->isAdmin() && Auth::user()->role !== $selectedRole) {
+            Auth::logout();
+            return back()->withErrors([
+                'login_as' => 'Pilih jenis akun yang sesuai dengan akun kamu.',
+            ])->onlyInput('email', 'login_as');
+        }
+
         $request->session()->regenerate();
         return redirect()->route('dashboard');
-    })->middleware('throttle:5,1')->name('login.store');
+    })->middleware('throttle:10,1')->name('login.store');
 
     Route::get('/register', function () {
         return view('auth.register', ['classes' => SchoolClass::with('department')->orderBy('level')->orderBy('name')->get()]);
@@ -135,6 +157,7 @@ Route::middleware('guest')->group(function () {
         ]);
         $user = User::create([
             'name' => $data['name'],
+            'username' => User::makeUniqueUsername($data['name']),
             'email' => $data['email'],
             // Kolom password memakai cast `hashed` pada model User. Password
             // asli hanya ada sesaat di request dan langsung di-hash sebelum disimpan.
@@ -174,10 +197,20 @@ Route::middleware('guest')->group(function () {
 
 Route::middleware('auth')->get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+// Logout berlaku untuk seluruh peran, bukan hanya siswa.
+Route::middleware('auth')->post('/logout', function (Request $request) {
+    Auth::logout();
+    $request->session()->invalidate();
+    $request->session()->regenerateToken();
+
+    return redirect()->route('landing');
+})->name('logout');
+
 Route::middleware(['auth', 'student'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('/portfolio/export/pdf', [PortfolioExportController::class, 'exportPdf'])->name('portfolio.export.pdf');
 
@@ -192,6 +225,7 @@ Route::get('/settings', [SettingsController::class, 'index'])->name('settings.in
     Route::get('/settings/export-json', [SettingsController::class, 'exportJson'])->name('settings.export-json');
 
     Route::get('/qr-code', [QrCodeController::class, 'index'])->name('qr-code.index');
+    Route::get('/qr-code/image', [QrCodeController::class, 'image'])->name('qr-code.image');
 
 Route::resource('achievements', AchievementController::class);
     Route::resource('projects', ProjectController::class);
@@ -201,12 +235,6 @@ Route::resource('achievements', AchievementController::class);
     Route::resource('skills', SkillController::class)->except(['show']);
     Route::resource('internships', InternshipController::class)->except(['show']);
 
-    Route::post('/logout', function (Request $request) {
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-        return redirect()->route('landing');
-    })->name('logout');
 });
 
 /*
@@ -215,7 +243,7 @@ Route::resource('achievements', AchievementController::class);
 |--------------------------------------------------------------------------
 */
 
-Route::middleware('auth')
+Route::middleware(['auth', 'teacher'])
     ->prefix('teacher')
     ->name('teacher.')
     ->group(function () {
@@ -224,6 +252,8 @@ Route::middleware('auth')
         Route::patch('/verifications/{type}/{id}', [TeacherController::class, 'verify'])->name('verify');
 Route::get('/projects', [TeacherController::class, 'projects'])->name('projects');
         Route::post('/projects/{project}/comments', [TeacherController::class, 'comment'])->name('projects.comment');
+        Route::put('/comments/{comment}', [TeacherController::class, 'updateComment'])->name('comments.update');
+        Route::delete('/comments/{comment}', [TeacherController::class, 'destroyComment'])->name('comments.destroy');
         Route::get('/statistics', [TeacherController::class, 'statistics'])->name('statistics');
     });
 
@@ -233,7 +263,7 @@ Route::get('/projects', [TeacherController::class, 'projects'])->name('projects'
 |--------------------------------------------------------------------------
 */
 
-Route::middleware('auth')
+Route::middleware(['auth', 'admin'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {

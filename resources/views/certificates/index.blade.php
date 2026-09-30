@@ -86,6 +86,15 @@
 
                 </small>
 
+                <div class="mt-1">
+                    <span class="badge bg-{{ $certificate->status === 'verified' ? 'success' : ($certificate->status === 'rejected' ? 'danger' : 'warning') }}">
+                        {{ $certificate->status === 'verified' ? 'Terverifikasi' : ($certificate->status === 'rejected' ? 'Ditolak' : 'Menunggu') }}
+                    </span>
+                    @if($certificate->status === 'rejected' && $certificate->rejection_reason)
+                        <small class="d-block text-danger mt-1">{{ $certificate->rejection_reason }}</small>
+                    @endif
+                </div>
+
             </div>
 
             <div>

@@ -1,8 +1,8 @@
 <footer class="footer mt-5">
 
-    <div class="d-flex justify-content-between align-items-center flex-wrap">
+    <div class="footer-content">
 
-        <div>
+        <div class="footer-brand">
 
             <strong>PortoEdu</strong>
 
@@ -14,13 +14,9 @@
 
         </div>
 
-        <div class="footer-links">
+        <div class="footer-note">
 
-            <a href="#">Privacy</a>
-
-            <a href="#">Terms</a>
-
-            <a href="#">Support</a>
+            <span class="text-muted small">Privacy, Terms, dan Support akan tersedia setelah halaman kebijakan resmi diterbitkan.</span>
 
         </div>
 

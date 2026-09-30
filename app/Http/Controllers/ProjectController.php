@@ -128,8 +128,8 @@ class ProjectController extends Controller
 
         $title = $project->title;
 
-        if ($project->image) {
-            Storage::disk('public')->delete($project->image);
+        foreach (array_filter([$project->image, $project->thumbnail]) as $file) {
+            Storage::disk('public')->delete($file);
         }
 
         $project->delete();
@@ -141,4 +141,3 @@ class ProjectController extends Controller
             ->with('success', 'Project berhasil dihapus.');
     }
 }
-

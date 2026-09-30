@@ -19,6 +19,7 @@ class Certificate extends Model
         'status',
         'verified_by',
         'verified_at',
+        'rejection_reason',
     ];
 
     protected $casts = [
@@ -36,4 +37,3 @@ class Certificate extends Model
         return $this->belongsTo(Teacher::class, 'verified_by');
     }
 }
-

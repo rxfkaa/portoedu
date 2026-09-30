@@ -1,6 +1,6 @@
 <div class="quick-action">
 
-    <a href="#" class="quick-btn">
+    <a href="{{ route('achievements.index') }}" class="quick-btn">
 
         <i class="bi bi-trophy-fill"></i>
 
@@ -8,7 +8,7 @@
 
     </a>
 
-    <a href="#" class="quick-btn">
+    <a href="{{ route('certificates.index') }}" class="quick-btn">
 
         <i class="bi bi-patch-check-fill"></i>
 
@@ -16,7 +16,7 @@
 
     </a>
 
-    <a href="#" class="quick-btn">
+    <a href="{{ route('projects.index') }}" class="quick-btn">
 
         <i class="bi bi-kanban-fill"></i>
 
@@ -24,7 +24,7 @@
 
     </a>
 
-    <a href="#" class="quick-btn">
+    <a href="{{ route('organizations.index') }}" class="quick-btn">
 
         <i class="bi bi-people-fill"></i>
 

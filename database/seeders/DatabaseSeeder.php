@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $this->call(AcademicStructureSeeder::class);
 // User::factory(10)->create();
 
         User::query()->firstOrCreate([
@@ -43,14 +44,10 @@ class DatabaseSeeder extends Seeder
         Certificate::query()->firstOrCreate(['student_id' => $student->id, 'title' => 'Sertifikasi UI/UX Design'], ['category' => 'Kompetensi', 'issuer' => 'Dicoding Indonesia', 'issued_at' => now()->subDays(14), 'status' => 'pending']);
         Project::query()->firstOrCreate(['student_id' => $student->id, 'slug' => 'school-library-app'], ['title' => 'Aplikasi Perpustakaan Sekolah', 'description' => 'Aplikasi web untuk membantu pengelolaan peminjaman buku dan data anggota perpustakaan sekolah.', 'status' => 'published']);
 
-        DB::table('departments')->updateOrInsert(['code' => 'RPL'], ['name' => 'Rekayasa Perangkat Lunak', 'updated_at' => now(), 'created_at' => now()]);
-        DB::table('departments')->updateOrInsert(['code' => 'DKV'], ['name' => 'Desain Komunikasi Visual', 'updated_at' => now(), 'created_at' => now()]);
         $rplId = DB::table('departments')->where('code', 'RPL')->value('id');
         $dkvId = DB::table('departments')->where('code', 'DKV')->value('id');
-        DB::table('classes')->updateOrInsert(['name' => 'XII RPL 1'], ['department_id' => $rplId, 'level' => 'XII', 'updated_at' => now(), 'created_at' => now()]);
-        DB::table('classes')->updateOrInsert(['name' => 'XII DKV 1'], ['department_id' => $dkvId, 'level' => 'XII', 'updated_at' => now(), 'created_at' => now()]);
-        $rplClass = DB::table('classes')->where('name', 'XII RPL 1')->value('id');
-        $dkvClass = DB::table('classes')->where('name', 'XII DKV 1')->value('id');
+        $rplClass = DB::table('classes')->where('department_id', $rplId)->where('level', 'XII')->where('name', 'RPL 1')->value('id');
+        $dkvClass = DB::table('classes')->where('department_id', $dkvId)->where('level', 'XII')->where('name', 'DKV 1')->value('id');
 
         $students = [
             ['Alya Putri', 'alya.putri@dsp.test', '2026002', 'UI/UX Aplikasi Kesehatan', 'Juara 2 UI/UX Competition', 'Sertifikat Fundamental UI/UX', 'DKV'],

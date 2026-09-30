@@ -6,6 +6,7 @@ use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Str;
 
 use App\Models\Student;
 use App\Models\Teacher;
@@ -17,6 +18,7 @@ class User extends Authenticatable
 
     protected $fillable = [
         'name',
+        'username',
         'email',
         'password',
         'role',
@@ -97,5 +99,19 @@ class User extends Authenticatable
     public function isActive(): bool
     {
         return $this->status === 'active';
+    }
+
+    /** Create a URL-safe portfolio identifier without relying on a display name. */
+    public static function makeUniqueUsername(string $name): string
+    {
+        $base = Str::slug($name) ?: 'user';
+        $username = $base;
+        $suffix = 2;
+
+        while (static::where('username', $username)->exists()) {
+            $username = $base . '-' . $suffix++;
+        }
+
+        return $username;
     }
 }

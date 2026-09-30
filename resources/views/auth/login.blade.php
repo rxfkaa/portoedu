@@ -13,9 +13,30 @@
         <div class="auth-form">
             <a href="{{ route('landing') }}" class="text-decoration-none text-muted small"><i class="bi bi-arrow-left"></i> Kembali ke beranda</a>
             <h2 class="mt-4 fw-bold">Masuk</h2>
-            <p class="text-muted">Masuk untuk melanjutkan ke dashboard kamu.</p>
+            <p class="text-muted">Pilih jenis akun, lalu masuk untuk melanjutkan ke dashboard kamu.</p>
             <form action="{{ route('login.store') }}" method="POST" class="mt-4">
                 @csrf
+                <fieldset class="login-role-picker mb-4">
+                    <legend>Masuk sebagai</legend>
+                    <div class="login-role-options">
+                        <div>
+                            <input class="btn-check" type="radio" name="login_as" id="loginAsStudent" value="student" @checked(old('login_as', 'student') === 'student')>
+                            <label for="loginAsStudent">
+                                <i class="bi bi-mortarboard"></i>
+                                <span><strong>Siswa</strong><small>Kelola portfolio</small></span>
+                            </label>
+                        </div>
+                        <div>
+                            <input class="btn-check" type="radio" name="login_as" id="loginAsTeacher" value="teacher" @checked(old('login_as') === 'teacher')>
+                            <label for="loginAsTeacher">
+                                <i class="bi bi-person-workspace"></i>
+                                <span><strong>Guru</strong><small>Review portfolio</small></span>
+                            </label>
+                        </div>
+                    </div>
+                    <small class="login-role-note"><i class="bi bi-shield-check"></i> Admin dapat masuk melalui pilihan mana pun.</small>
+                    @error('login_as')<small class="text-danger d-block mt-1">{{ $message }}</small>@enderror
+                </fieldset>
                 <div class="mb-3">
                     <label class="form-label">Email</label>
                     <input type="email" name="email" value="{{ old('email') }}" class="form-control form-control-lg" placeholder="Masukkan email" required autofocus>

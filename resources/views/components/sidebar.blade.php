@@ -109,8 +109,8 @@
             $avatarUrl = asset('storage/' . Auth::user()->student->photo);
         }
     @endphp
-    <div class="sidebar-bottom" style="margin-top: auto; padding: 20px 24px 0;">
-        <div class="sidebar-user d-flex align-items-center gap-3 p-3 bg-light rounded-4 mb-3">
+    <div class="sidebar-bottom">
+        <div class="sidebar-user">
             <img src="{{ $avatarUrl }}" alt="Avatar" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover;">
             <div>
                 <strong>{{ Auth::user()->name ?? 'User' }}</strong>

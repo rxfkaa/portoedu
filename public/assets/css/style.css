@@ -172,7 +172,7 @@ img { max-width: 100%; }
 
 .sidebar-menu hr { border-color: var(--border); }
 
-.sidebar-bottom { padding-top: 12px; border-top: 1px solid var(--border); }
+.sidebar-bottom { margin-top: auto; padding: 20px 6px 0; border-top: 1px solid var(--border); }
 
 .sidebar-user {
     display: flex;
@@ -679,8 +679,8 @@ body.no-anim *::after {
 ===================================================== */
 .floating-button {
     position: fixed;
-    right: 28px;
-    bottom: 28px;
+    right: max(28px, calc((100vw - 1600px) / 2 + 28px));
+    bottom: calc(28px + env(safe-area-inset-bottom, 0px));
     width: 60px;
     height: 60px;
     border-radius: 50%;
@@ -693,7 +693,7 @@ body.no-anim *::after {
     text-decoration: none;
     box-shadow: 0 14px 34px rgba(37, 99, 235, .4);
     transition: all .3s ease;
-    z-index: 999;
+    z-index: 900;
 }
 
 .floating-button:hover { transform: scale(1.08) rotate(90deg); color: #fff; }
@@ -823,6 +823,73 @@ body.no-anim *::after {
 
 .auth-form h2 { font-weight: 800; }
 
+/* Compact account-type picker on the login form. */
+.login-role-picker {
+    border: 0;
+    padding: 0;
+}
+
+.login-role-picker legend {
+    color: var(--text);
+    font-size: .9rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+}
+
+.login-role-options {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.login-role-options label {
+    align-items: center;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    color: var(--text);
+    cursor: pointer;
+    display: flex;
+    gap: 10px;
+    min-height: 70px;
+    padding: 12px;
+    transition: border-color .2s ease, box-shadow .2s ease, background .2s ease, transform .2s ease;
+}
+
+.login-role-options label > i {
+    align-items: center;
+    background: color-mix(in srgb, var(--primary) 12%, transparent);
+    border-radius: 10px;
+    color: var(--primary);
+    display: inline-flex;
+    font-size: 19px;
+    height: 38px;
+    justify-content: center;
+    width: 38px;
+}
+
+.login-role-options label strong,
+.login-role-options label small {
+    display: block;
+    line-height: 1.2;
+}
+
+.login-role-options label strong { font-size: .9rem; }
+.login-role-options label small { color: var(--text-muted); font-size: .72rem; margin-top: 3px; }
+
+.login-role-options .btn-check:checked + label {
+    background: color-mix(in srgb, var(--primary) 8%, var(--card-bg));
+    border-color: var(--primary);
+    box-shadow: 0 7px 18px rgba(37, 99, 235, .15);
+}
+
+.login-role-options .btn-check:checked + label > i { background: var(--primary); color: #fff; }
+.login-role-options label:hover { border-color: var(--primary-light); transform: translateY(-1px); }
+.login-role-options .btn-check:focus-visible + label { outline: 3px solid rgba(37, 99, 235, .25); outline-offset: 2px; }
+
+.login-role-note { color: var(--text-muted); display: block; font-size: .75rem; margin-top: 9px; }
+.login-role-note i { color: var(--success); margin-right: 3px; }
+
 /* =====================================================
    FOOTER
 ===================================================== */
@@ -840,6 +907,12 @@ body.no-anim *::after {
 }
 
 .footer strong { color: var(--primary); }
+.footer-content { width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 20px; }
+.footer-brand { display: flex; flex-direction: column; gap: 2px; }
+.footer-brand strong { font-size: 15px; }
+.footer-brand > div, .footer-note { color: var(--text-muted); font-size: 12px; }
+.footer-note { display: flex; align-items: flex-start; justify-content: flex-end; gap: 7px; max-width: 540px; text-align: right; line-height: 1.45; }
+.footer-note i { color: var(--primary); margin-top: 1px; }
 
 /* =====================================================
    DARK MODE OVERRIDES
@@ -861,6 +934,13 @@ body.no-anim *::after {
 .dark-mode .text-muted { color: var(--text-muted) !important; }
 .dark-mode .table { color: var(--text); }
 .dark-mode .achievement-card:hover { background: var(--bg); }
+.dark-mode .sidebar-user { background: var(--bg); }
+.dark-mode .list-group,
+.dark-mode .list-group-item { background: transparent; border-color: var(--border); }
+.dark-mode .footer { background: var(--card-bg); border-color: var(--border); }
+.dark-mode .bg-light { background-color: var(--bg) !important; color: var(--text) !important; }
+.dark-mode .text-dark { color: var(--text) !important; }
+.comment-card { background: var(--bg); border: 1px solid var(--border); }
 
 /* =====================================================
    DARK MODE: ALL TEXT VISIBLE
@@ -1153,10 +1233,13 @@ body.no-anim *::after {
     .content-wrapper { padding: 16px 12px; }
     .sidebar-bottom { padding: 16px 12px 0 !important; }
     .toast-modern { min-width: 92%; right: 4%; }
-    .floating-button { width: 52px; height: 52px; right: 18px; bottom: 18px; font-size: 22px; }
+    .floating-button { width: 52px; height: 52px; right: 18px; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); font-size: 22px; }
     .table-responsive table td, .table-responsive table th { padding: 10px 8px; font-size: 13px; }
     .page-header h2 { font-size: 22px; }
     .btn-lg { padding: 12px 16px; }
+    .footer { padding: 18px 20px; }
+    .footer-content { align-items: flex-start; flex-direction: column; gap: 10px; }
+    .footer-note { justify-content: flex-start; max-width: none; text-align: left; }
 }
 
 /* Ensure sidebar toggle button always visible on mobile */

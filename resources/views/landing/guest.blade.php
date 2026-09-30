@@ -154,17 +154,7 @@
 
                 </h5>
 
-                <div class="social-icons">
-
-                    <a href="#"><i class="bi bi-github"></i></a>
-
-                    <a href="#"><i class="bi bi-instagram"></i></a>
-
-                    <a href="#"><i class="bi bi-linkedin"></i></a>
-
-                    <a href="#"><i class="bi bi-envelope-fill"></i></a>
-
-                </div>
+                <p class="mb-0">Kanal resmi PortoEdu belum tersedia.</p>
 
             </div>
 

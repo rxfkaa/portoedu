@@ -17,6 +17,11 @@
     <div class="glass-card p-4">
         <form action="{{ route('internships.store') }}" method="POST">
             @csrf
+            @if($errors->any())
+                <div class="alert alert-danger" role="alert">
+                    <strong>Data PKL belum dapat disimpan.</strong> Periksa kembali kolom yang ditandai.
+                </div>
+            @endif
             <div class="row">
                 <div class="col-md-6 mb-3">
                     <label class="form-label fw-semibold">Nama Perusahaan <span class="text-danger">*</span></label>
@@ -38,16 +43,19 @@
                 </div>
                 <div class="col-md-6 mb-3">
                     <label class="form-label fw-semibold">Tanggal Selesai</label>
-                    <input type="date" name="ended_at" class="form-control" value="{{ old('ended_at') }}">
+                    <input type="date" name="ended_at" class="form-control @error('ended_at') is-invalid @enderror" value="{{ old('ended_at') }}">
                     <small class="text-muted">Kosongkan jika masih berlangsung</small>
+                    @error('ended_at')<div class="invalid-feedback">{{ $message }}</div>@enderror
                 </div>
                 <div class="col-12 mb-3">
                     <label class="form-label fw-semibold">Alamat Perusahaan</label>
-                    <input type="text" name="address" class="form-control" value="{{ old('address') }}">
+                    <input type="text" name="address" class="form-control @error('address') is-invalid @enderror" value="{{ old('address') }}">
+                    @error('address')<div class="invalid-feedback">{{ $message }}</div>@enderror
                 </div>
                 <div class="col-12 mb-3">
                     <label class="form-label fw-semibold">Deskripsi</label>
-                    <textarea name="description" rows="4" class="form-control">{{ old('description') }}</textarea>
+                    <textarea name="description" rows="4" class="form-control @error('description') is-invalid @enderror">{{ old('description') }}</textarea>
+                    @error('description')<div class="invalid-feedback">{{ $message }}</div>@enderror
                 </div>
             </div>
             <div class="text-end mt-3">

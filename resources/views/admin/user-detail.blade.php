@@ -35,13 +35,13 @@
                 <form action="{{ route('admin.users.approve', $user) }}" method="POST" class="mb-4">@csrf
                     <label class="form-label fw-semibold">Tetapkan sebagai</label>
                     <select name="role" class="form-select mb-3" required><option value="student" @selected($user->requested_role === 'student')>Siswa</option><option value="teacher" @selected($user->requested_role === 'teacher')>Guru</option></select>
-                    <button class="btn btn-success w-100 rounded-3"><i class="bi bi-check-lg me-1"></i> Terima dan Aktifkan Akun</button>
+                    <button class="btn btn-success w-100 rounded-3" onclick="return confirm('Setujui dan aktifkan akun ini?')"><i class="bi bi-check-lg me-1"></i> Terima dan Aktifkan Akun</button>
                 </form>
                 <hr class="my-4">
                 <form action="{{ route('admin.users.reject', $user) }}" method="POST">@csrf
                     <label class="form-label fw-semibold" for="rejection_reason">Alasan penolakan</label>
                     <textarea id="rejection_reason" name="rejection_reason" class="form-control mb-3" rows="3" maxlength="1000" required placeholder="Contoh: Data belum lengkap, silakan daftar kembali dengan informasi yang sesuai."></textarea>
-                    <button class="btn btn-outline-danger w-100 rounded-3"><i class="bi bi-x-lg me-1"></i> Tolak Pendaftaran</button>
+                    <button class="btn btn-outline-danger w-100 rounded-3" onclick="return confirm('Tolak pendaftaran ini?')"><i class="bi bi-x-lg me-1"></i> Tolak Pendaftaran</button>
                 </form>
             @else
                 <h5 class="fw-bold mb-2">Status akun</h5><p class="text-muted mb-0">Akun ini sudah diproses. Perubahan peran tidak tersedia dari halaman ini untuk menjaga konsistensi profil dan akses.</p>

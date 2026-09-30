@@ -9,6 +9,9 @@ use App\Models\PortfolioSetting;
 use App\Models\Department;
 use App\Models\SchoolClass;
 use App\Models\Notification;
+use App\Models\Achievement;
+use App\Models\Comment;
+use App\Models\Project;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -164,6 +167,34 @@ class PasswordSecurityTest extends TestCase
         $this->actingAs($teacher)->get(route('dashboard'))->assertRedirect(route('teacher.dashboard'));
     }
 
+    public function test_login_role_selection_blocks_role_mismatch_but_not_admin(): void
+    {
+        $student = User::factory()->create([
+            'role' => 'student',
+            'status' => 'active',
+            'password' => Hash::make('PasswordAman123'),
+        ]);
+        $admin = User::factory()->create([
+            'role' => 'admin',
+            'status' => 'active',
+            'password' => Hash::make('PasswordAman123'),
+        ]);
+
+        $this->post(route('login.store'), [
+            'email' => $student->email,
+            'password' => 'PasswordAman123',
+            'login_as' => 'teacher',
+        ])->assertSessionHasErrors('login_as');
+        $this->assertGuest();
+
+        $this->post(route('login.store'), [
+            'email' => $admin->email,
+            'password' => 'PasswordAman123',
+            'login_as' => 'student',
+        ])->assertRedirect(route('dashboard'));
+        $this->assertAuthenticatedAs($admin);
+    }
+
     public function test_student_can_save_a_valid_public_portfolio_theme(): void
     {
         $user = User::factory()->create(['role' => 'student', 'status' => 'active']);
@@ -190,6 +221,47 @@ class PasswordSecurityTest extends TestCase
         ]);
     }
 
+    public function test_student_can_generate_and_download_a_local_qr_code(): void
+    {
+        $user = User::factory()->create(['role' => 'student', 'status' => 'active']);
+        Student::create(['user_id' => $user->id, 'nis' => 'QR-' . $user->id, 'name' => $user->name]);
+
+        $this->actingAs($user)
+            ->get(route('qr-code.image'))
+            ->assertOk()
+            ->assertHeader('Content-Type', 'image/svg+xml')
+            ->assertSee('<svg', false);
+
+        $this->actingAs($user)
+            ->get(route('qr-code.image', ['download' => 1]))
+            ->assertOk()
+            ->assertHeader('Content-Disposition');
+    }
+
+    public function test_student_can_save_an_internship(): void
+    {
+        $user = User::factory()->create(['role' => 'student', 'status' => 'active']);
+        $student = Student::create(['user_id' => $user->id, 'nis' => 'PKL-' . $user->id, 'name' => $user->name]);
+
+        $this->actingAs($user)
+            ->post(route('internships.store'), [
+                'company' => 'PT PortoEdu',
+                'position' => 'Web Developer Intern',
+                'started_at' => '2026-01-01',
+                'ended_at' => '2026-06-30',
+                'address' => 'Bandung',
+                'description' => 'Membangun portfolio siswa.',
+            ])
+            ->assertRedirect(route('internships.index'))
+            ->assertSessionHas('success');
+
+        $this->assertDatabaseHas('internships', [
+            'student_id' => $student->id,
+            'company' => 'PT PortoEdu',
+            'position' => 'Web Developer Intern',
+        ]);
+    }
+
     public function test_expired_reset_token_cannot_change_a_password(): void
     {
         $user = User::factory()->create(['password' => 'PasswordLama123']);
@@ -210,5 +282,52 @@ class PasswordSecurityTest extends TestCase
 
         $this->assertTrue(Hash::check('PasswordLama123', $user->fresh()->getRawOriginal('password')));
         $this->assertDatabaseMissing('password_reset_tokens', ['email' => $user->email]);
+    }
+
+    public function test_account_deletion_requires_the_current_password(): void
+    {
+        $user = User::factory()->create([
+            'role' => 'student',
+            'status' => 'active',
+            'password' => Hash::make('PasswordAman123'),
+        ]);
+        Student::create(['user_id' => $user->id, 'nis' => 'DELETE-' . $user->id, 'name' => $user->name]);
+
+        $this->actingAs($user)
+            ->delete(route('profile.destroy'), ['current_password' => 'password-salah'])
+            ->assertSessionHasErrors('current_password');
+        $this->assertDatabaseHas('users', ['id' => $user->id]);
+
+        $this->actingAs($user)
+            ->delete(route('profile.destroy'), ['current_password' => 'PasswordAman123'])
+            ->assertRedirect(route('landing'));
+        $this->assertDatabaseMissing('users', ['id' => $user->id]);
+        $this->assertGuest();
+    }
+
+    public function test_teacher_must_provide_a_rejection_reason_and_only_owns_comments(): void
+    {
+        $teacherUser = User::factory()->create(['role' => 'teacher', 'status' => 'active']);
+        $teacher = Teacher::create(['user_id' => $teacherUser->id, 'name' => $teacherUser->name]);
+        $otherTeacherUser = User::factory()->create(['role' => 'teacher', 'status' => 'active']);
+        $otherTeacher = Teacher::create(['user_id' => $otherTeacherUser->id, 'name' => $otherTeacherUser->name]);
+        $studentUser = User::factory()->create(['role' => 'student', 'status' => 'active']);
+        $student = Student::create(['user_id' => $studentUser->id, 'nis' => 'REVIEW-' . $studentUser->id, 'name' => $studentUser->name]);
+        $achievement = Achievement::create(['student_id' => $student->id, 'title' => 'Lomba', 'level' => 'Kota', 'organizer' => 'Sekolah', 'date' => now(), 'status' => 'pending']);
+        $project = Project::create(['student_id' => $student->id, 'title' => 'Project', 'description' => 'Deskripsi project', 'status' => 'published']);
+        $comment = Comment::create(['teacher_id' => $teacher->id, 'project_id' => $project->id, 'comment' => 'Bagus']);
+
+        $this->actingAs($teacherUser)
+            ->patch(route('teacher.verify', ['type' => 'achievement', 'id' => $achievement->id]), ['status' => 'rejected'])
+            ->assertSessionHasErrors('rejection_reason');
+
+        $this->actingAs($teacherUser)
+            ->patch(route('teacher.verify', ['type' => 'achievement', 'id' => $achievement->id]), ['status' => 'rejected', 'rejection_reason' => 'Dokumen pendukung belum lengkap.'])
+            ->assertSessionHas('success');
+        $this->assertDatabaseHas('achievements', ['id' => $achievement->id, 'status' => 'rejected', 'rejection_reason' => 'Dokumen pendukung belum lengkap.']);
+
+        $this->actingAs($otherTeacherUser)
+            ->put(route('teacher.comments.update', $comment), ['comment' => 'Diubah tanpa izin'])
+            ->assertForbidden();
     }
 }
