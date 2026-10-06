@@ -37,7 +37,7 @@ class DatabaseSeeder extends Seeder
         $teacherUser->update(['role' => 'teacher', 'status' => 'active']);
         $teacher = Teacher::query()->firstOrCreate(['user_id' => $teacherUser->id], ['nip' => '198907152014012001', 'name' => 'Ibu Dini Pratiwi', 'subject' => 'Produktif RPL', 'phone' => '081234567890']);
 
-        $studentUser = User::query()->firstOrCreate(['email' => 'siswa@dsp.test'], ['name' => 'Rafka Aleandra', 'email_verified_at' => now(), 'password' => Hash::make('password'), 'role' => 'student']);
+        $studentUser = User::query()->firstOrCreate(['email' => 'siswa@dsp.test'], ['name' => 'Rafka Aleandra', 'email_verified_at' => now(), 'Password' => Hash::make('password'), 'role' => 'student']);
         $studentUser->update(['role' => 'student', 'status' => 'active']);
         $student = Student::query()->firstOrCreate(['user_id' => $studentUser->id], ['nis' => '2026001', 'nisn' => '0061234567', 'name' => 'Rafka Aleandra']);
         Achievement::query()->firstOrCreate(['student_id' => $student->id, 'title' => 'Juara 1 LKS Web Technology'], ['category' => 'Kompetisi', 'level' => 'Provinsi', 'organizer' => 'Dinas Pendidikan', 'date' => now()->subDays(7), 'status' => 'pending']);
