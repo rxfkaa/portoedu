@@ -30,6 +30,14 @@ class AcademicStructureSeeder extends Seeder
                     'name' => $code . ' 1',
                 ]);
             }
+
+            if ($code === 'RPL') {
+                SchoolClass::firstOrCreate([
+                    'department_id' => $department->id,
+                    'level' => 'XII',
+                    'name' => 'RPL 2',
+                ]);
+            }
         }
     }
 }

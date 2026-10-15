@@ -117,6 +117,7 @@ return view('dashboard.index', compact(
             'certificateCount',
             'organizationCount',
             'recentAchievements',
+            'student',
             'greeting',
             'progress',
             'monthlyDataStr',

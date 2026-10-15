@@ -31,7 +31,7 @@ class PasswordSecurityTest extends TestCase
             'name' => 'Siswa PortoEdu',
             'email' => 'siswa@example.com',
             'requested_role' => 'student',
-            'nis' => '12345678',
+            'nipd' => '12345678',
             'class_id' => $class->id,
             'password' => 'PasswordAman123',
             'password_confirmation' => 'PasswordAman123',
@@ -43,7 +43,7 @@ class PasswordSecurityTest extends TestCase
         $this->assertTrue(Hash::check('PasswordAman123', $user->getRawOriginal('password')));
         $this->assertSame('pending', $user->status);
         $this->assertSame('student', $user->requested_role);
-        $this->assertSame('12345678', $user->registration_nis);
+        $this->assertSame('12345678', $user->registration_nipd);
         $this->assertSame($class->id, $user->registration_class_id);
         $this->assertDatabaseMissing('students', ['user_id' => $user->id]);
 
@@ -138,7 +138,7 @@ class PasswordSecurityTest extends TestCase
         $studentUser = User::factory()->create(['name' => 'Portfolio Public']);
         Student::create([
             'user_id' => $studentUser->id,
-            'nis' => 'PUBLIC-' . $studentUser->id,
+            'nipd' => 'PUBLIC-' . $studentUser->id,
             'name' => $studentUser->name,
         ]);
         $teacher = User::factory()->create(['role' => 'teacher']);
@@ -200,7 +200,7 @@ class PasswordSecurityTest extends TestCase
         $user = User::factory()->create(['role' => 'student', 'status' => 'active']);
         Student::create([
             'user_id' => $user->id,
-            'nis' => 'THEME-' . $user->id,
+            'nipd' => 'THEME-' . $user->id,
             'name' => $user->name,
         ]);
 
@@ -224,7 +224,7 @@ class PasswordSecurityTest extends TestCase
     public function test_student_can_generate_and_download_a_local_qr_code(): void
     {
         $user = User::factory()->create(['role' => 'student', 'status' => 'active']);
-        Student::create(['user_id' => $user->id, 'nis' => 'QR-' . $user->id, 'name' => $user->name]);
+        Student::create(['user_id' => $user->id, 'nipd' => 'QR-' . $user->id, 'name' => $user->name]);
 
         $this->actingAs($user)
             ->get(route('qr-code.image'))
@@ -241,7 +241,7 @@ class PasswordSecurityTest extends TestCase
     public function test_student_can_save_an_internship(): void
     {
         $user = User::factory()->create(['role' => 'student', 'status' => 'active']);
-        $student = Student::create(['user_id' => $user->id, 'nis' => 'PKL-' . $user->id, 'name' => $user->name]);
+        $student = Student::create(['user_id' => $user->id, 'nipd' => 'PKL-' . $user->id, 'name' => $user->name]);
 
         $this->actingAs($user)
             ->post(route('internships.store'), [
@@ -291,7 +291,7 @@ class PasswordSecurityTest extends TestCase
             'status' => 'active',
             'password' => Hash::make('PasswordAman123'),
         ]);
-        Student::create(['user_id' => $user->id, 'nis' => 'DELETE-' . $user->id, 'name' => $user->name]);
+        Student::create(['user_id' => $user->id, 'nipd' => 'DELETE-' . $user->id, 'name' => $user->name]);
 
         $this->actingAs($user)
             ->delete(route('profile.destroy'), ['current_password' => 'password-salah'])
@@ -312,7 +312,7 @@ class PasswordSecurityTest extends TestCase
         $otherTeacherUser = User::factory()->create(['role' => 'teacher', 'status' => 'active']);
         $otherTeacher = Teacher::create(['user_id' => $otherTeacherUser->id, 'name' => $otherTeacherUser->name]);
         $studentUser = User::factory()->create(['role' => 'student', 'status' => 'active']);
-        $student = Student::create(['user_id' => $studentUser->id, 'nis' => 'REVIEW-' . $studentUser->id, 'name' => $studentUser->name]);
+        $student = Student::create(['user_id' => $studentUser->id, 'nipd' => 'REVIEW-' . $studentUser->id, 'name' => $studentUser->name]);
         $achievement = Achievement::create(['student_id' => $student->id, 'title' => 'Lomba', 'level' => 'Kota', 'organizer' => 'Sekolah', 'date' => now(), 'status' => 'pending']);
         $project = Project::create(['student_id' => $student->id, 'title' => 'Project', 'description' => 'Deskripsi project', 'status' => 'published']);
         $comment = Comment::create(['teacher_id' => $teacher->id, 'project_id' => $project->id, 'comment' => 'Bagus']);

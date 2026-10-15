@@ -111,7 +111,9 @@
     @endphp
     <div class="sidebar-bottom">
         <div class="sidebar-user">
-            <img src="{{ $avatarUrl }}" alt="Avatar" style="width: 48px; height: 48px; border-radius: 50%; object-fit: cover;">
+            <span class="sidebar-avatar-frame">
+                <img src="{{ $avatarUrl }}" alt="Foto profil {{ Auth::user()->name ?? 'User' }}">
+            </span>
             <div>
                 <strong>{{ Auth::user()->name ?? 'User' }}</strong>
                 <small class="text-success d-block">Online</small>

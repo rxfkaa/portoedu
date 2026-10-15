@@ -13,7 +13,7 @@
                 <tbody>
                 @forelse($section['items'] as $item)
                     <tr>
-                        <td><strong>{{ $item->student->name ?? $item->student->user->name }}</strong><br><small class="text-muted">{{ $item->student->nis }}</small></td>
+                        <td><strong>{{ $item->student->name ?? $item->student->user->name }}</strong><br><small class="text-muted">{{ $item->student->nipd }}</small></td>
                         <td><strong>{{ $item->title }}</strong><br><small class="text-muted">{{ $type === 'achievement' ? $item->organizer : $item->issuer }}</small></td>
                         <td>{{ ($type === 'achievement' ? $item->date : $item->issued_at)?->format('d M Y') }}</td>
                         <td><span class="badge {{ $item->status === 'verified' ? 'text-bg-success' : ($item->status === 'rejected' ? 'text-bg-danger' : 'text-bg-warning') }}">{{ $item->status === 'pending' ? 'Menunggu' : ucfirst($item->status) }}</span>@if($item->status === 'rejected' && $item->rejection_reason)<small class="d-block text-danger mt-1">{{ $item->rejection_reason }}</small>@endif</td>

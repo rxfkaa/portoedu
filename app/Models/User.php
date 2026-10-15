@@ -20,7 +20,7 @@ class User extends Authenticatable
         'role',
         'status',
         'requested_role',
-        'registration_nis',
+        'registration_nipd',
         'registration_class_id',
         'registration_nip',
         'registration_phone',

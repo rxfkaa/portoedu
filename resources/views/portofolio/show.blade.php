@@ -26,11 +26,18 @@
         padding: 60px 0;
     }
     .public-portfolio .portfolio-avatar {
+        display: block;
         width: 180px;
         height: 180px;
+        max-width: none;
+        margin-left: auto;
+        margin-right: auto;
         border-radius: 50%;
-        border: 5px solid rgba(255,255,255,0.3);
+        border: 0;
+        outline: 0;
+        box-shadow: none;
         object-fit: cover;
+        object-position: center;
     }
     .public-portfolio .portfolio-section {
         padding: 40px 0;
@@ -62,7 +69,8 @@
         @php
             $avatar = 'https://ui-avatars.com/api/?name=' . urlencode($user->name ?? 'User') . '&background=2563EB&color=fff&size=200';
             if ($student && $student->photo) {
-                $avatar = asset('storage/' . $student->photo);
+                $circlePhoto = 'profiles/circles/' . pathinfo($student->photo, PATHINFO_FILENAME) . '.jpg';
+                $avatar = asset('storage/' . (\Illuminate\Support\Facades\Storage::disk('public')->exists($circlePhoto) ? $circlePhoto : $student->photo));
             }
         @endphp
         <img src="{{ $avatar }}" class="portfolio-avatar mb-4" alt="{{ $user->name ?? 'Student' }}">
@@ -99,6 +107,9 @@
             @endforeach
         </div>
         <div class="mt-4 d-flex justify-content-center gap-2">
+            <a href="{{ route('students.index') }}" class="btn btn-outline-light btn-sm rounded-pill px-3">
+                <i class="bi bi-arrow-left me-1"></i>Kembali ke Direktori
+            </a>
             <button class="btn btn-light btn-sm rounded-pill px-3" type="button" onclick="sharePortfolio()">
                 <i class="bi bi-share me-1"></i>Share
             </button>

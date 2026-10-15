@@ -27,9 +27,10 @@
         border: 1px solid #e2e8f0;
     }
     .student-card:hover { transform: translateY(-8px); box-shadow: 0 22px 50px rgba(37, 99, 235, .18); color: #2563eb; }
-    .student-card img { width: 96px; height: 96px; border-radius: 50%; object-fit: cover; margin-bottom: 16px; border: 4px solid #eff6ff; }
+    .student-photo-frame { display:block; width:96px; height:96px; margin:0 auto 16px; overflow:hidden; border:0; border-radius:50%; background:transparent; }
+    .student-photo-frame img { display:block; width:100%; height:100%; max-width:none; object-fit:cover; object-position:center; border:0; border-radius:50%; transform:scale(1.04); }
     .student-card h5 { font-weight: 700; margin-bottom: 4px; }
-    .student-card .nis { color: #94a3b8; font-size: 13px; }
+    .student-card .nipd { color: #94a3b8; font-size: 13px; }
     .student-card .dept { color: #2563eb; font-size: 13px; font-weight: 600; }
     .student-stat { display: flex; justify-content: center; gap: 20px; margin-top: 16px; padding-top: 14px; border-top: 1px solid #eef2f7; font-size: 13px; color: #64748b; }
     .student-stat strong { color: #1e293b; }
@@ -38,13 +39,18 @@
 <!-- Hero -->
 <section class="student-hero">
     <div class="container">
+        <div class="mb-4">
+            <a href="{{ route('landing') }}" class="btn btn-outline-light rounded-pill px-4">
+                <i class="bi bi-arrow-left me-2"></i>Kembali ke Halaman Awal
+            </a>
+        </div>
         <span class="badge bg-white text-primary rounded-pill px-4 py-2 mb-3">🚀 Student Directory</span>
         <h1>Direktori Siswa</h1>
         <p class="mt-3 mb-4 opacity-75">Temukan portofolio digital seluruh siswa SMK.</p>
 
         <form method="GET" action="{{ route('students.index') }}" class="row justify-content-center g-2">
             <div class="col-md-5">
-                <input type="text" name="search" value="{{ request('search') }}" class="form-control py-3" placeholder="Cari nama atau NIS...">
+                <input type="text" name="search" value="{{ request('search') }}" class="form-control py-3" placeholder="Cari nama atau NIPD...">
             </div>
             <div class="col-md-3">
                 <select name="department" class="form-select py-3">
@@ -75,15 +81,19 @@
                 @foreach($students as $student)
                     <div class="col-sm-6 col-lg-4 col-xl-3">
                         <a href="{{ route('portfolio.show', $student->user?->username ?? $student->user?->name ?? $student->name) }}" class="student-card">
-                            @php $photo = $student->photo ?? 'https://ui-avatars.com/api/?name=' . urlencode($student->name) . '&background=2563EB&color=fff&size=120'; @endphp
-                            <img src="{{ $student->photo ? asset('storage/' . $student->photo) : $photo }}" alt="{{ $student->name }}">
+                            @php
+                                $photo = 'https://ui-avatars.com/api/?name=' . urlencode($student->name) . '&background=2563EB&color=fff&size=120';
+                                if ($student->photo) {
+                                    $circlePhoto = 'profiles/circles/' . pathinfo($student->photo, PATHINFO_FILENAME) . '.jpg';
+                                    $photo = asset('storage/' . (\Illuminate\Support\Facades\Storage::disk('public')->exists($circlePhoto) ? $circlePhoto : $student->photo));
+                                }
+                            @endphp
+                            <span class="student-photo-frame">
+                                <img src="{{ $photo }}" alt="{{ $student->name }}">
+                            </span>
                             <h5>{{ $student->name }}</h5>
-                            <div class="nis">{{ $student->nis }}</div>
+                            <div class="nipd">{{ $student->nipd }}</div>
                             <div class="dept mt-1">{{ $student->classRoom?->name ?? 'Belum Ada Kelas' }}</div>
-                            <div class="student-stat">
-                                <span>🏆 <strong>{{ $student->achievements_count }}</strong></span>
-                                <span>💻 <strong>{{ $student->projects_count ?? 0 }}</strong></span>
-                            </div>
                         </a>
                     </div>
                 @endforeach

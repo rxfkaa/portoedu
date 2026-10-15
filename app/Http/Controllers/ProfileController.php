@@ -82,7 +82,7 @@ class ProfileController extends Controller
         if (!$student) {
             $student = Student::create([
                 'user_id' => $user->id,
-                'nis' => 'NIS-' . $user->id,
+                'nipd' => 'NIPD-' . $user->id,
                 'name' => $data['name'],
             ]);
         }

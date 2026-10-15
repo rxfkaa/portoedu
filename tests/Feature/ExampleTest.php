@@ -38,7 +38,7 @@ class ExampleTest extends TestCase
         $user = User::factory()->create(['role' => 'student', 'status' => 'active']);
         Student::create([
             'user_id' => $user->id,
-            'nis' => 'TEST-' . $user->id,
+            'nipd' => 'TEST-' . $user->id,
             'name' => $user->name,
         ]);
 

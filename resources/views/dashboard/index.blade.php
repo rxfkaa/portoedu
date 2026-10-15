@@ -38,11 +38,12 @@
             </div>
 
             <div class="col-lg-4 text-center">
-
-                <img
-                    src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png"
-                    class="hero-avatar img-fluid">
-
+                <div class="hero-avatar-frame">
+                    <img
+                        src="{{ $student && $student->photo ? asset('storage/'.$student->photo) : 'https://ui-avatars.com/api/?name='.urlencode(Auth::user()->name).'&background=DBEAFE&color=1D4ED8&size=220' }}"
+                        alt="Foto profil {{ Auth::user()->name }}"
+                        class="hero-avatar">
+                </div>
             </div>
 
         </div>

@@ -46,13 +46,13 @@ PortoEdu adalah aplikasi portofolio digital sekolah berbasis Laravel. Siswa dapa
 
 ## Akun demo
 
-Semua akun demo menggunakan password `password`.
+Semua akun demo lokal menggunakan password `password`. Jangan gunakan kredensial tersebut di hosting production.
 
 | Role | Email |
 | --- | --- |
 | Admin | `admin@dsp.test` |
 | Guru | `guru@dsp.test` |
-| Siswa | `siswa@dsp.test` |
+| Siswa | Email dibuat dari nama depan, misalnya `rafka@gmail.com`; nama yang diawali Muhammad memakai nama berikutnya |
 
 ## Skenario presentasi
 
@@ -79,4 +79,6 @@ Semua akun demo menggunakan password `password`.
 
 5. Aktifkan HTTPS dan uji upload file, reset password, portfolio publik, serta tiap role setelah deploy.
 
-Jangan gunakan akun demo dan password demo untuk instalasi production.
+Untuk production, jalankan migrasi saja (`php artisan migrate --force`), jangan jalankan `db:seed` atau `migrate --seed`. `StudentRosterSeeder` menghapus akun siswa yang ada lalu membuat ulang akun demo; menjalankannya pada database production dapat menghapus profil/portofolio siswa dan menggantinya dengan data demo.
+
+Jangan gunakan akun demo dan password demo untuk instalasi production. Ganti kredensial admin/guru, atur SMTP production, dan simpan `.env` di server secara privat.

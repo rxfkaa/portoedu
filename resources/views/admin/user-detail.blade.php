@@ -20,7 +20,7 @@
                 <dt class="col-sm-5">Status akun</dt><dd class="col-sm-7 text-capitalize">{{ $user->status }}</dd>
                 @if($user->status === 'rejected')<dt class="col-sm-5">Alasan penolakan</dt><dd class="col-sm-7">{{ $user->rejection_reason }}</dd>@endif
                 @if($user->requested_role === 'student' || $user->student)
-                    <dt class="col-sm-5">NIS</dt><dd class="col-sm-7">{{ $user->student?->nis ?? $user->registration_nis ?? '-' }}</dd>
+                    <dt class="col-sm-5">NIPD</dt><dd class="col-sm-7">{{ $user->student?->nipd ?? $user->registration_nipd ?? '-' }}</dd>
                     <dt class="col-sm-5">Kelas</dt><dd class="col-sm-7">@php($class = $user->student?->classRoom ?? $user->registrationClass) {{ $class ? $class->level . ' ' . $class->name . ' — ' . $class->department?->name : '-' }}</dd>
                 @endif
                 @if($user->requested_role === 'teacher' || $user->teacher)

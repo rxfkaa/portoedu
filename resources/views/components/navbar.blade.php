@@ -10,32 +10,6 @@
     <!-- RIGHT -->
     <div class="navbar-right">
 
-        <!-- Language Switch -->
-        @php $currentLocale = session('locale', 'id'); @endphp
-        <div class="dropdown">
-            <button class="icon-btn" data-bs-toggle="dropdown" title="{{ __t('language') }}">
-                <i class="bi bi-translate"></i>
-            </button>
-            <ul class="dropdown-menu dropdown-menu-end shadow border-0 rounded-4">
-                <li>
-                    <a class="dropdown-item {{ $currentLocale === 'id' ? 'active' : '' }}" href="{{ route('locale', 'id') }}">
-                        🇮🇩 <span class="ms-1">Bahasa Indonesia</span>
-                        @if($currentLocale === 'id')
-                            <i class="bi bi-check2 ms-2"></i>
-                        @endif
-                    </a>
-                </li>
-                <li>
-                    <a class="dropdown-item {{ $currentLocale === 'en' ? 'active' : '' }}" href="{{ route('locale', 'en') }}">
-                        🇬🇧 <span class="ms-1">English</span>
-                        @if($currentLocale === 'en')
-                            <i class="bi bi-check2 ms-2"></i>
-                        @endif
-                    </a>
-                </li>
-            </ul>
-        </div>
-
         <!-- Dark Mode -->
         <button class="icon-btn" id="darkToggle" title="{{ __t('dark_mode') }}" aria-label="{{ __t('dark_mode') }}">
             <i class="bi bi-moon-stars-fill"></i>
@@ -69,7 +43,9 @@
 
         <div class="dropdown">
             <button class="profile-dropdown" data-bs-toggle="dropdown">
-                <img src="{{ $navAvatar }}" class="profile-image" style="object-fit:cover;">
+                <span class="profile-image-frame">
+                    <img src="{{ $navAvatar }}" class="profile-image" alt="Foto profil {{ Auth::user()->name ?? 'User' }}">
+                </span>
 
                 <div class="profile-info">
                     <strong>{{ Auth::user()->name ?? 'User' }}</strong>

@@ -28,7 +28,7 @@
                     @error('requested_role')<small class="text-danger">{{ $message }}</small>@enderror
                 </div>
                 <div id="student-registration-fields" class="registration-role-fields" hidden>
-                    <div class="mb-3"><label class="form-label">NIS</label><input name="nis" value="{{ old('nis') }}" class="form-control form-control-lg @error('nis') is-invalid @enderror" maxlength="50" inputmode="numeric"><small class="text-muted">Masukkan NIS resmi yang terdaftar di sekolah.</small>@error('nis')<small class="text-danger d-block">{{ $message }}</small>@enderror</div>
+                    <div class="mb-3"><label class="form-label">NIPD</label><input name="nipd" value="{{ old('nipd') }}" class="form-control form-control-lg @error('nipd') is-invalid @enderror" maxlength="50" inputmode="numeric"><small class="text-muted">Masukkan NIPD resmi yang terdaftar di sekolah.</small>@error('nipd')<small class="text-danger d-block">{{ $message }}</small>@enderror</div>
                     <div class="mb-3"><label class="form-label">Kelas</label><select name="class_id" class="form-select form-select-lg @error('class_id') is-invalid @enderror"><option value="">Pilih kelas</option>@foreach($classes as $class)<option value="{{ $class->id }}" @selected((string) old('class_id') === (string) $class->id)>{{ $class->level }} {{ $class->name }} — {{ $class->department?->name }}</option>@endforeach</select>@error('class_id')<small class="text-danger">{{ $message }}</small>@enderror</div>
                 </div>
                 <div id="teacher-registration-fields" class="registration-role-fields" hidden>

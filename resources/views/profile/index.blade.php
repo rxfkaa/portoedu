@@ -28,8 +28,8 @@
                         Student
                     @endif
                 </p>
-                @if($student && $student->nis)
-                    <span class="badge bg-light text-dark me-1">NIS: {{ $student->nis }}</span>
+                @if($student && $student->nipd)
+                    <span class="badge bg-light text-dark me-1">NIPD: {{ $student->nipd }}</span>
                 @endif
                 @if($student && $student->nisn)
                     <span class="badge bg-light text-dark">NISN: {{ $student->nisn }}</span>

@@ -17,7 +17,7 @@ class ApiAuthenticationTest extends TestCase
         $user = User::factory()->create([
             'role' => 'student',
             'status' => 'active',
-            'registration_nis' => 'SENSITIVE-NIS',
+            'registration_nipd' => 'SENSITIVE-NIPD',
         ]);
 
         $this->getJson('/api/users')->assertUnauthorized();
@@ -32,7 +32,7 @@ class ApiAuthenticationTest extends TestCase
             ->assertOk()
             ->assertJsonPath('data.id', $user->id)
             ->assertJsonMissingPath('data.password')
-            ->assertJsonMissingPath('data.registration_nis');
+            ->assertJsonMissingPath('data.registration_nipd');
 
         $this->withToken($token)->getJson('/api/users')->assertForbidden();
     }

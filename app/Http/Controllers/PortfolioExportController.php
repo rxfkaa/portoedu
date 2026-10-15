@@ -9,6 +9,7 @@ use App\Models\Certificate;
 use App\Models\Organization;
 use App\Models\Skill;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Traits\LogsActivity;
@@ -31,6 +32,8 @@ class PortfolioExportController extends Controller
         $certificates = $student->certificates()->where('status', 'verified')->latest()->get();
         $organizations = $student->organizations()->latest()->get();
         $skills = $student->skills()->latest()->get();
+        $internships = $student->internships()->latest('started_at')->get();
+        $photoDataUri = $this->photoDataUri($student);
 
         $pdf = Pdf::loadView('portofolio.pdf', compact(
             'user',
@@ -39,7 +42,9 @@ class PortfolioExportController extends Controller
             'projects',
             'certificates',
             'organizations',
-            'skills'
+            'skills',
+            'internships',
+            'photoDataUri'
         ));
 
         $pdf->setPaper('A4', 'portrait');
@@ -63,6 +68,8 @@ class PortfolioExportController extends Controller
         $certificates = $student->certificates()->where('status', 'verified')->latest()->get();
         $organizations = $student->organizations()->latest()->get();
         $skills = $student->skills()->latest()->get();
+        $internships = $student->internships()->latest('started_at')->get();
+        $photoDataUri = $this->photoDataUri($student);
 
         $pdf = Pdf::loadView('portofolio.pdf', compact(
             'user',
@@ -71,7 +78,9 @@ class PortfolioExportController extends Controller
             'projects',
             'certificates',
             'organizations',
-            'skills'
+            'skills',
+            'internships',
+            'photoDataUri'
         ));
 
         $pdf->setPaper('A4', 'portrait');
@@ -82,5 +91,22 @@ class PortfolioExportController extends Controller
         ]);
 
         return $pdf->download('portofolio-' . Str::slug($user->name) . '.pdf');
+    }
+
+    private function photoDataUri(Student $student): ?string
+    {
+        if (!$student->photo) {
+            return null;
+        }
+
+        $circlePhoto = 'profiles/circles/' . pathinfo($student->photo, PATHINFO_FILENAME) . '.jpg';
+        $photoPath = Storage::disk('public')->exists($circlePhoto) ? $circlePhoto : $student->photo;
+        if (!Storage::disk('public')->exists($photoPath)) {
+            return null;
+        }
+
+        $mime = Storage::disk('public')->mimeType($photoPath) ?: 'image/jpeg';
+
+        return 'data:' . $mime . ';base64,' . base64_encode(Storage::disk('public')->get($photoPath));
     }
 }

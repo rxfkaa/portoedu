@@ -123,7 +123,7 @@ class AdminController extends Controller
             if ($data['role'] === 'student') {
                 Student::firstOrCreate(
                     ['user_id' => $user->id],
-                    ['nis' => $user->registration_nis, 'class_id' => $user->registration_class_id, 'name' => $user->name]
+                    ['nipd' => $user->registration_nipd, 'class_id' => $user->registration_class_id, 'name' => $user->name]
                 );
             } else {
                 Teacher::firstOrCreate(

@@ -22,7 +22,7 @@ class StudentDirectoryController extends Controller
         if ($search = request('search')) {
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('nis', 'like', "%{$search}%")
+                  ->orWhere('nipd', 'like', "%{$search}%")
                   ->orWhereHas('user', function ($u) use ($search) {
                       $u->where('name', 'like', "%{$search}%");
                   });
