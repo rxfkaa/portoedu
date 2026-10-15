@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Api\UserResource;
 use App\Models\User;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -11,102 +13,61 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::latest()->get();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Data user berhasil diambil.',
-            'data' => $users
-        ], 200);
+        return UserResource::collection(User::query()->latest()->paginate(20));
     }
 
-    public function show($id)
+    public function show(User $user): UserResource
     {
-        $user = User::find($id);
-
-        if (!$user) {
-            return response()->json([
-                'success' => false,
-                'message' => 'User tidak ditemukan.'
-            ], 404);
-        }
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Detail user berhasil diambil.',
-            'data' => $user
-        ], 200);
+        return new UserResource($user);
     }
 
-    public function store(Request $request)
+    public function store(Request $request): JsonResponse
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:8',
-            'role' => 'required|string'
+        $data = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'username' => ['nullable', 'string', 'max:255', 'unique:users,username'],
+            'email' => ['required', 'email', 'max:255', 'unique:users,email'],
+            'password' => ['required', 'string', 'min:8'],
+            'role' => ['required', 'in:student,teacher,admin'],
+            'status' => ['sometimes', 'in:active,pending,rejected'],
         ]);
 
-        $validated['password'] = Hash::make($validated['password']);
+        $data['password'] = Hash::make($data['password']);
+        $user = User::create($data);
 
-        $user = User::create($validated);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'User berhasil ditambahkan.',
-            'data' => $user
-        ], 201);
+        return (new UserResource($user))
+            ->response()
+            ->setStatusCode(201)
+            ->header('Location', route('api.users.show', $user));
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, User $user): UserResource
     {
-        $user = User::find($id);
-
-        if (!$user) {
-            return response()->json([
-                'success' => false,
-                'message' => 'User tidak ditemukan.'
-            ], 404);
-        }
-
-        $validated = $request->validate([
-            'name' => 'sometimes|required|string|max:255',
-            'email' => 'sometimes|required|email|unique:users,email,' . $user->id,
-            'password' => 'nullable|min:8',
-            'role' => 'sometimes|required|string'
+        $data = $request->validate([
+            'name' => ['sometimes', 'required', 'string', 'max:255'],
+            'username' => ['sometimes', 'nullable', 'string', 'max:255', 'unique:users,username,'.$user->id],
+            'email' => ['sometimes', 'required', 'email', 'max:255', 'unique:users,email,'.$user->id],
+            'password' => ['sometimes', 'required', 'string', 'min:8'],
+            'role' => ['sometimes', 'required', 'in:student,teacher,admin'],
+            'status' => ['sometimes', 'required', 'in:active,pending,rejected'],
         ]);
 
-        if (!empty($validated['password'])) {
-            $validated['password'] = Hash::make($validated['password']);
-        } else {
-            unset($validated['password']);
+        if (isset($data['password'])) {
+            $data['password'] = Hash::make($data['password']);
         }
 
-        $user->update($validated);
+        $user->update($data);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'User berhasil diperbarui.',
-            'data' => $user
-        ], 200);
+        return new UserResource($user->refresh());
     }
 
-    public function destroy($id)
+    public function destroy(User $user): JsonResponse
     {
-        $user = User::find($id);
-
-        if (!$user) {
-            return response()->json([
-                'success' => false,
-                'message' => 'User tidak ditemukan.'
-            ], 404);
-        }
-
         $user->delete();
 
         return response()->json([
             'success' => true,
-            'message' => 'User berhasil dihapus.'
-        ], 200);
+            'message' => 'User berhasil dihapus.',
+        ]);
     }
 }

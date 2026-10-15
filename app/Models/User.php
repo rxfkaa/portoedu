@@ -2,19 +2,15 @@
 
 namespace App\Models;
 
-use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
-
-use App\Models\Student;
-use App\Models\Teacher;
-use App\Models\Notification;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable;
 
     protected $fillable = [
         'name',
@@ -109,7 +105,7 @@ class User extends Authenticatable
         $suffix = 2;
 
         while (static::where('username', $username)->exists()) {
-            $username = $base . '-' . $suffix++;
+            $username = $base.'-'.$suffix++;
         }
 
         return $username;

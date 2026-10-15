@@ -74,13 +74,6 @@
     </main>
 </div>
 
-{{-- Floating Button (Siswa only) --}}
-@if(Auth::check() && !Auth::user()?->isTeacher() && !Auth::user()?->isAdmin())
-    <a href="{{ route('achievements.create') }}" class="floating-button" aria-label="Tambah prestasi" title="Tambah prestasi">
-        <i class="bi bi-plus-lg"></i>
-    </a>
-@endif
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.6/dist/js/bootstrap.bundle.min.js"></script>
 <script src="{{ asset('assets/js/app.js') }}"></script>
 @stack('scripts')

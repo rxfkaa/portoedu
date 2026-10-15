@@ -34,7 +34,6 @@
                             </label>
                         </div>
                     </div>
-                    <small class="login-role-note"><i class="bi bi-shield-check"></i> Admin dapat masuk melalui pilihan mana pun.</small>
                     @error('login_as')<small class="text-danger d-block mt-1">{{ $message }}</small>@enderror
                 </fieldset>
                 <div class="mb-3">
